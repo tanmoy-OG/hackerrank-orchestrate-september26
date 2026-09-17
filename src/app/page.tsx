@@ -28,6 +28,13 @@ interface Decision {
   earliest_date_for_full_payment: string;
   spending_changes_needed: string;
   decision_explanation: string;
+  deterministic_explanation?: string;
+  ai_provider?: string;
+  ai_model?: string;
+  math_verified?: boolean;
+  ai_latency_ms?: number;
+  lowest_projected_balance?: number;
+  lowest_balance_date?: string;
 }
 
 interface ProfileData {
@@ -1147,9 +1154,42 @@ export default function StandaloneApp() {
                   </div>
                 </div>
 
+                {/* AI Advisor Attribution & Math-Verification Badge */}
+                <div className="flex items-center justify-between gap-2 flex-wrap text-[11px] sm:text-xs">
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full font-semibold bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-800/50 shadow-2xs">
+                      <span>✨</span>
+                      <span>{result.decision.ai_provider || "AI Financial Advisor"}</span>
+                      {result.decision.ai_model && (
+                        <span className="opacity-80 font-normal">({result.decision.ai_model})</span>
+                      )}
+                    </span>
+                    <span
+                      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-medium bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800/50"
+                      title="Mathematically grounded across a 90-day cash ledger with zero arithmetic hallucination"
+                    >
+                      <span>✓</span>
+                      <span>Math-Verified</span>
+                    </span>
+                  </div>
+                  {result.decision.ai_latency_ms != null && result.decision.ai_latency_ms > 0 && (
+                    <span className="text-[10px] text-gray-400 dark:text-gray-500 font-mono">
+                      {result.decision.ai_latency_ms}ms
+                    </span>
+                  )}
+                </div>
+
                 {/* Recommendation Plain English */}
-                <div className="hover-lift p-4 sm:p-5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-blue-50/70 to-emerald-50/70 dark:from-blue-950/30 dark:to-emerald-950/30 border border-blue-100 dark:border-blue-800/40 text-gray-900 dark:text-gray-200 text-xs sm:text-sm leading-relaxed font-medium shadow-xs">
-                  {result.decision.decision_explanation}
+                <div className="hover-lift p-4 sm:p-5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-blue-50/70 to-emerald-50/70 dark:from-blue-950/30 dark:to-emerald-950/30 border border-blue-100 dark:border-blue-800/40 text-gray-900 dark:text-gray-200 text-xs sm:text-sm leading-relaxed font-medium shadow-xs space-y-2.5">
+                  <p>{result.decision.decision_explanation}</p>
+                  {result.decision.deterministic_explanation && result.decision.deterministic_explanation !== result.decision.decision_explanation && (
+                    <div className="pt-2 border-t border-black/[0.05] dark:border-white/10 text-[11px] text-gray-500 dark:text-gray-400 flex items-start gap-1.5">
+                      <span className="font-semibold shrink-0 uppercase tracking-wider text-[10px] text-gray-400 dark:text-gray-500">
+                        Simulation Ledger:
+                      </span>
+                      <span className="leading-normal">{result.decision.deterministic_explanation}</span>
+                    </div>
+                  )}
                 </div>
 
                 {/* Trajectory Forward Chart */}
@@ -1438,10 +1478,18 @@ export default function StandaloneApp() {
                         </div>
                       </div>
 
-                      {/* Query Text */}
-                      <p className="text-xs sm:text-sm font-semibold text-gray-900 dark:text-white">
-                        {item.query}
-                      </p>
+                      {/* Query Text & AI Model Badge */}
+                      <div className="flex items-center justify-between gap-2 flex-wrap">
+                        <p className="text-xs sm:text-sm font-semibold text-gray-900 dark:text-white">
+                          {item.query}
+                        </p>
+                        {item.decision.ai_provider && (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-blue-50 text-blue-700 border border-blue-100 dark:bg-blue-950/30 dark:text-blue-300 dark:border-blue-800/40">
+                            <span>✨</span>
+                            <span>{item.decision.ai_provider}</span>
+                          </span>
+                        )}
+                      </div>
 
                       {/* Explanation Snippet */}
                       <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2">

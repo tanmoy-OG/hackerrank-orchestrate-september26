@@ -1,9 +1,609 @@
 [
   {
+    "id": "req_1789664864733",
+    "createdAt": "2026-09-17T17:07:44.733Z",
+    "query": "Can I afford to buy a new laptop for ₹1,200 today?",
+    "amount": 1200,
+    "currency": "INR",
+    "requestDate": "2026-09-17",
+    "desiredDate": "2026-10-17",
+    "allowsPartial": false,
+    "uploadedReceiptName": "",
+    "decision": {
+      "request_id": "req_1789664863348",
+      "amount_safe_to_pay": "1200",
+      "affordability_status": "affordable_now",
+      "recommended_payment_method": "full_payment",
+      "payment_plan": "2026-09-17:1200",
+      "earliest_date_for_full_payment": "2026-09-17",
+      "spending_changes_needed": "none",
+      "decision_explanation": "**Verdict: BUY NOW (Safe Today)**\n\nYou are fully in the clear to pick up this new laptop for INR 1,200 today while comfortably maintaining your INR 2,000 emergency safety floor. Our 90-day cash flow simulation shows that even after this purchase, your account will bottom out at a healthy INR 3,800 on 2026-09-17. Enjoy your new gear with total peace of mind knowing your baseline finances remain completely secure!",
+      "deterministic_explanation": "Pay INR 1,200 today. This leaves at least INR 2,000 available over the next 90 days.",
+      "ai_provider": "Google Gemini",
+      "ai_model": "Gemini Flash Lite",
+      "math_verified": true,
+      "ai_latency_ms": 1348,
+      "lowest_projected_balance": 3800,
+      "lowest_balance_date": "2026-09-17"
+    },
+    "profileSnapshot": {
+      "name": "Test 3",
+      "currentBalance": 5000,
+      "minimumBalance": 2000,
+      "homeCurrency": "INR"
+    },
+    "trajectory": [
+      {
+        "date": "2026-09-17",
+        "balance": 3800,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-09-22",
+        "balance": 3800,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-09-27",
+        "balance": 3800,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-10-02",
+        "balance": 3800,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-10-07",
+        "balance": 3800,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-10-12",
+        "balance": 3800,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-10-17",
+        "balance": 3800,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-10-22",
+        "balance": 3800,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-10-27",
+        "balance": 3800,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-11-01",
+        "balance": 3800,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-11-06",
+        "balance": 3800,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-11-11",
+        "balance": 3800,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-11-16",
+        "balance": 3800,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-11-21",
+        "balance": 3800,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-11-26",
+        "balance": 3800,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-12-01",
+        "balance": 3800,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-12-06",
+        "balance": 3800,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-12-11",
+        "balance": 3800,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-12-16",
+        "balance": 3800,
+        "minRequired": 2000,
+        "isBelow": false
+      }
+    ]
+  },
+  {
+    "id": "req_1789664350694",
+    "createdAt": "2026-09-17T16:59:10.694Z",
+    "query": "Can I afford to buy a new laptop for ₹1,200000 today?",
+    "amount": 120000000,
+    "currency": "INR",
+    "requestDate": "2026-09-17",
+    "desiredDate": "2026-10-17",
+    "allowsPartial": false,
+    "uploadedReceiptName": "",
+    "decision": {
+      "request_id": "req_1789664349819",
+      "amount_safe_to_pay": "3000",
+      "affordability_status": "not_affordable",
+      "recommended_payment_method": "not_recommended",
+      "payment_plan": "none",
+      "earliest_date_for_full_payment": "",
+      "spending_changes_needed": "none",
+      "decision_explanation": "Do not proceed with the INR 120,000,000 request. Although INR 3,000 is available today, the full amount cannot be completed safely within 90 days.",
+      "deterministic_explanation": "Do not proceed with the INR 120,000,000 request. Although INR 3,000 is available today, the full amount cannot be completed safely within 90 days.",
+      "ai_provider": "Mathematical Simulation Engine",
+      "ai_model": "Ledger Simulator v1.0",
+      "math_verified": true,
+      "ai_latency_ms": 843,
+      "lowest_projected_balance": 5000,
+      "lowest_balance_date": "2026-09-17"
+    },
+    "profileSnapshot": {
+      "name": "Test 3",
+      "currentBalance": 5000,
+      "minimumBalance": 2000,
+      "homeCurrency": "INR"
+    },
+    "trajectory": [
+      {
+        "date": "2026-09-17",
+        "balance": 5000,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-09-22",
+        "balance": 5000,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-09-27",
+        "balance": 5000,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-10-02",
+        "balance": 5000,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-10-07",
+        "balance": 5000,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-10-12",
+        "balance": 5000,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-10-17",
+        "balance": 5000,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-10-22",
+        "balance": 5000,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-10-27",
+        "balance": 5000,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-11-01",
+        "balance": 5000,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-11-06",
+        "balance": 5000,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-11-11",
+        "balance": 5000,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-11-16",
+        "balance": 5000,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-11-21",
+        "balance": 5000,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-11-26",
+        "balance": 5000,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-12-01",
+        "balance": 5000,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-12-06",
+        "balance": 5000,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-12-11",
+        "balance": 5000,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-12-16",
+        "balance": 5000,
+        "minRequired": 2000,
+        "isBelow": false
+      }
+    ]
+  },
+  {
+    "id": "req_1789664318865",
+    "createdAt": "2026-09-17T16:58:38.865Z",
+    "query": "Can I afford to buy a new laptop for ₹1,200000 today?",
+    "amount": 1200,
+    "currency": "INR",
+    "requestDate": "2026-09-17",
+    "desiredDate": "2026-10-17",
+    "allowsPartial": false,
+    "uploadedReceiptName": "",
+    "decision": {
+      "request_id": "req_1789664317051",
+      "amount_safe_to_pay": "1200",
+      "affordability_status": "affordable_now",
+      "recommended_payment_method": "full_payment",
+      "payment_plan": "2026-09-17:1200",
+      "earliest_date_for_full_payment": "2026-09-17",
+      "spending_changes_needed": "none",
+      "decision_explanation": "Pay INR 1,200 today. This leaves at least INR 2,000 available over the next 90 days.",
+      "deterministic_explanation": "Pay INR 1,200 today. This leaves at least INR 2,000 available over the next 90 days.",
+      "ai_provider": "Mathematical Simulation Engine",
+      "ai_model": "Ledger Simulator v1.0",
+      "math_verified": true,
+      "ai_latency_ms": 1793,
+      "lowest_projected_balance": 3800,
+      "lowest_balance_date": "2026-09-17"
+    },
+    "profileSnapshot": {
+      "name": "Test 3",
+      "currentBalance": 5000,
+      "minimumBalance": 2000,
+      "homeCurrency": "INR"
+    },
+    "trajectory": [
+      {
+        "date": "2026-09-17",
+        "balance": 3800,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-09-22",
+        "balance": 3800,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-09-27",
+        "balance": 3800,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-10-02",
+        "balance": 3800,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-10-07",
+        "balance": 3800,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-10-12",
+        "balance": 3800,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-10-17",
+        "balance": 3800,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-10-22",
+        "balance": 3800,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-10-27",
+        "balance": 3800,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-11-01",
+        "balance": 3800,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-11-06",
+        "balance": 3800,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-11-11",
+        "balance": 3800,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-11-16",
+        "balance": 3800,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-11-21",
+        "balance": 3800,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-11-26",
+        "balance": 3800,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-12-01",
+        "balance": 3800,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-12-06",
+        "balance": 3800,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-12-11",
+        "balance": 3800,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-12-16",
+        "balance": 3800,
+        "minRequired": 2000,
+        "isBelow": false
+      }
+    ]
+  },
+  {
+    "id": "req_1789664275588",
+    "createdAt": "2026-09-17T16:57:55.588Z",
+    "query": "Can I afford to buy a new laptop for ₹1,200 today?",
+    "amount": 1200,
+    "currency": "INR",
+    "requestDate": "2026-09-17",
+    "desiredDate": "2026-10-17",
+    "allowsPartial": false,
+    "uploadedReceiptName": "",
+    "decision": {
+      "request_id": "req_1789664274911",
+      "amount_safe_to_pay": "1200",
+      "affordability_status": "affordable_now",
+      "recommended_payment_method": "full_payment",
+      "payment_plan": "2026-09-17:1200",
+      "earliest_date_for_full_payment": "2026-09-17",
+      "spending_changes_needed": "none",
+      "decision_explanation": "Pay INR 1,200 today. This leaves at least INR 2,000 available over the next 90 days.",
+      "deterministic_explanation": "Pay INR 1,200 today. This leaves at least INR 2,000 available over the next 90 days.",
+      "ai_provider": "Mathematical Simulation Engine",
+      "ai_model": "Ledger Simulator v1.0",
+      "math_verified": true,
+      "ai_latency_ms": 627,
+      "lowest_projected_balance": 3800,
+      "lowest_balance_date": "2026-09-17"
+    },
+    "profileSnapshot": {
+      "name": "Test 3",
+      "currentBalance": 5000,
+      "minimumBalance": 2000,
+      "homeCurrency": "INR"
+    },
+    "trajectory": [
+      {
+        "date": "2026-09-17",
+        "balance": 3800,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-09-22",
+        "balance": 3800,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-09-27",
+        "balance": 3800,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-10-02",
+        "balance": 3800,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-10-07",
+        "balance": 3800,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-10-12",
+        "balance": 3800,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-10-17",
+        "balance": 3800,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-10-22",
+        "balance": 3800,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-10-27",
+        "balance": 3800,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-11-01",
+        "balance": 3800,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-11-06",
+        "balance": 3800,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-11-11",
+        "balance": 3800,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-11-16",
+        "balance": 3800,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-11-21",
+        "balance": 3800,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-11-26",
+        "balance": 3800,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-12-01",
+        "balance": 3800,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-12-06",
+        "balance": 3800,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-12-11",
+        "balance": 3800,
+        "minRequired": 2000,
+        "isBelow": false
+      },
+      {
+        "date": "2026-12-16",
+        "balance": 3800,
+        "minRequired": 2000,
+        "isBelow": false
+      }
+    ]
+  },
+  {
     "id": "req_hist_01",
     "createdAt": "2026-09-12T14:32:00.000Z",
     "query": "Can I afford to purchase a 4K OLED Monitor for $899 today?",
-    "amount": 899.0,
+    "amount": 899,
     "currency": "USD",
     "requestDate": "2026-09-12",
     "desiredDate": "2026-10-15",
@@ -18,8 +618,8 @@
       "decision_explanation": "Pay USD 899.00 today. This leaves at least USD 1,800.00 available over the next 90 days."
     },
     "profileSnapshot": {
-      "currentBalance": 6250.0,
-      "minimumBalance": 1800.0,
+      "currentBalance": 6250,
+      "minimumBalance": 1800,
       "homeCurrency": "USD"
     }
   },
@@ -27,7 +627,7 @@
     "id": "req_hist_02",
     "createdAt": "2026-09-10T10:15:00.000Z",
     "query": "Can I replace the home HVAC condenser unit for $3,800?",
-    "amount": 3800.0,
+    "amount": 3800,
     "currency": "USD",
     "requestDate": "2026-09-10",
     "desiredDate": "2026-12-15",
@@ -42,8 +642,8 @@
       "decision_explanation": "Use 3 installments of USD 1,266.67, starting 10 September 2026. This leaves at least USD 1,800.00 available."
     },
     "profileSnapshot": {
-      "currentBalance": 6250.0,
-      "minimumBalance": 1800.0,
+      "currentBalance": 6250,
+      "minimumBalance": 1800,
       "homeCurrency": "USD"
     }
   }

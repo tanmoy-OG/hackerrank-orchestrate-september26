@@ -14,6 +14,7 @@ import {
   toDateStr,
   addDays,
 } from "@/lib/financialEngine";
+import { generateGroundedExplanation } from "@/lib/llmOrchestrator";
 
 const BASE_DIR = process.cwd();
 const HISTORY_PATH = path.join(BASE_DIR, "data", "history.json");
@@ -303,18 +304,58 @@ export async function POST(request: Request) {
 
     const rawTrajectory = engine.forecastCashPositions(reqD, 90, new Set(), new Map(), planPayments);
     const sampledChart = [];
-    for (let idx = 0; idx < rawTrajectory.length; idx += 5) {
+    let lowestBalance = Infinity;
+    let lowestBalanceDate = reqData.request_date;
+
+    for (let idx = 0; idx < rawTrajectory.length; idx++) {
       const pt = rawTrajectory[idx];
-      sampledChart.push({
-        date: pt.date,
-        balance: Math.round(pt.balance * 100) / 100,
-        minRequired: Math.round(profileData.minimum_balance_to_keep * 100) / 100,
-        isBelow: pt.balance < profileData.minimum_balance_to_keep,
-      });
+      if (pt.balance < lowestBalance) {
+        lowestBalance = pt.balance;
+        lowestBalanceDate = pt.date;
+      }
+      if (idx % 5 === 0) {
+        sampledChart.push({
+          date: pt.date,
+          balance: Math.round(pt.balance * 100) / 100,
+          minRequired: Math.round(profileData.minimum_balance_to_keep * 100) / 100,
+          isBelow: pt.balance < profileData.minimum_balance_to_keep,
+        });
+      }
     }
+    if (lowestBalance === Infinity) lowestBalance = profileData.current_available_balance;
+
+    // Invoke Grounded Multi-LLM Waterfall (Gemini -> Mistral -> Groq -> Native Engine)
+    const llmResult = await generateGroundedExplanation({
+      query,
+      amount: Number(amount),
+      currency: cCurr,
+      verdict: decision.affordability_status,
+      currentBalance: profileData.current_available_balance,
+      minimumBalance: profileData.minimum_balance_to_keep,
+      safeToday: Number(decision.amount_safe_to_pay) || 0,
+      lowestProjectedBalance: Math.round(lowestBalance * 100) / 100,
+      lowestBalanceDate,
+      recommendedPaymentMethod: decision.recommended_payment_method,
+      paymentPlan: decision.payment_plan,
+      spendingChangesNeeded: decision.spending_changes_needed,
+      deterministicExplanation: decision.decision_explanation,
+      userName: activeProfile?.name || "User",
+    });
+
+    const enrichedDecision = {
+      ...decision,
+      decision_explanation: llmResult.ai_explanation,
+      deterministic_explanation: decision.decision_explanation,
+      ai_provider: llmResult.ai_provider,
+      ai_model: llmResult.ai_model,
+      math_verified: llmResult.math_verified,
+      ai_latency_ms: llmResult.latency_ms,
+      lowest_projected_balance: Math.round(lowestBalance * 100) / 100,
+      lowest_balance_date: lowestBalanceDate,
+    };
 
     const outputPayload = {
-      decision,
+      decision: enrichedDecision,
       profile: {
         user_id: profileData.user_id,
         home_currency: profileData.home_currency,
