@@ -1,5 +1,5 @@
 -- ==============================================================================
--- Buy or Wait? — Supabase PostgreSQL Schema & Security Policies
+-- Should I Buy It? — Supabase PostgreSQL Schema & Security Policies
 -- ==============================================================================
 -- Run this script in the Supabase SQL Editor (https://supabase.com/dashboard/project/_/sql)
 

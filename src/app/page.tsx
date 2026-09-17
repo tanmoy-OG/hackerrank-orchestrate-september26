@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 interface TrajectoryPoint {
   date: string;
@@ -88,9 +89,38 @@ const SAMPLE_RECEIPTS = [
   { name: "car_insurance_bill.png", label: "Insurance Bill ($920)", amount: 920 },
 ];
 
+const FAQ_ITEMS = [
+  {
+    question: "How does “Should I Buy It?” determine if I can afford a purchase?",
+    answer:
+      "Rather than simply checking if your current bank account balance exceeds the item price, our simulation projects your day-by-day cash flow over the next 90 days. It accounts for upcoming salary disbursements, recurring bill due dates, and your required emergency buffer. If the purchase would cause your liquid balance to dip below your safety cushion at any point over 90 days, it alerts you.",
+  },
+  {
+    question: "Why is looking at my bank balance not enough before buying?",
+    answer:
+      "Bank balances reflect a static snapshot, not future commitments. A balance of $3,000 may seem adequate for an $800 laptop today, but if rent ($1,500) and insurance ($400) are due in 5 days before your next paycheck arrives, making that purchase creates an immediate liquidity crisis.",
+  },
+  {
+    question: "Does “Should I Buy It?” require my banking credentials?",
+    answer:
+      "No. “Should I Buy It?” operates in Local Mode by default without requiring bank logins, Plaid integrations, or credit card connections. All math runs directly in your browser. If you choose to sign in, your profile is stored securely using Supabase Row Level Security.",
+  },
+  {
+    question: "What should my minimum emergency buffer be?",
+    answer:
+      "Financial planners generally recommend maintaining at least 1 to 3 months of basic living expenses in liquid cash. In our simulator, you define your personal comfort floor (e.g. $1,000 to $5,000) so the algorithm prevents impulse purchases from compromising your security.",
+  },
+];
+
 export default function StandaloneApp() {
   // Navigation Tabs: "advisor" | "history" | "profile"
   const [activeTab, setActiveTab] = useState<"advisor" | "history" | "profile">("advisor");
+
+  // FAQ Accordion State (first item open by default for immediate preview)
+  const [openFaqs, setOpenFaqs] = useState<Record<number, boolean>>({ 0: true });
+  const toggleFaq = (idx: number) => {
+    setOpenFaqs((prev) => ({ ...prev, [idx]: !prev[idx] }));
+  };
 
   // Authentication State
   const [supabaseReady, setSupabaseReady] = useState(false);
@@ -431,33 +461,33 @@ export default function StandaloneApp() {
     switch (status) {
       case "affordable_now":
         return {
-          bg: "bg-emerald-50 text-emerald-700 border-emerald-200",
+          bg: "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800/50",
           label: "Affordable Now",
           dot: "bg-emerald-500",
         };
       case "affordable_with_plan":
         return {
-          bg: "bg-blue-50 text-blue-700 border-blue-200",
+          bg: "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-800/50",
           label: "Affordable with Plan",
           dot: "bg-blue-500",
         };
       case "affordable_later":
         return {
-          bg: "bg-amber-50 text-amber-700 border-amber-200",
+          bg: "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800/50",
           label: "Affordable Later (Wait)",
           dot: "bg-amber-500",
         };
       case "not_affordable":
         return {
-          bg: "bg-rose-50 text-rose-700 border-rose-200",
+          bg: "bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800/50",
           label: "Not Affordable",
           dot: "bg-rose-500",
         };
       default:
         return {
-          bg: "bg-gray-100 text-gray-700 border-gray-200",
+          bg: "bg-gray-100 text-gray-700 border-gray-200 dark:bg-[#1c1c1e] dark:text-gray-300 dark:border-white/10",
           label: status,
-          dot: "bg-gray-400",
+          dot: "bg-gray-400 dark:bg-gray-500",
         };
     }
   };
@@ -484,33 +514,33 @@ export default function StandaloneApp() {
   }, [history]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#fbfbfd]">
+    <div className="min-h-screen flex flex-col bg-[#fbfbfd] dark:bg-[#000000] text-[#1d1d1f] dark:text-[#f5f5f7] transition-colors duration-200">
       {/* Sleek Apple + Google Header */}
       <header className="sticky top-0 z-30 glass-nav">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           {/* Brand Logo & Name */}
-          <div className="flex items-center space-x-3 cursor-pointer" onClick={() => setActiveTab("advisor")}>
-            <div className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-[#0071e3] to-[#34a853] flex items-center justify-center text-white font-bold text-base shadow-sm hover:scale-105 transition-transform">
+          <div className="flex items-center space-x-3 cursor-pointer group" onClick={() => setActiveTab("advisor")}>
+            <div className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-[#0071e3] to-[#34a853] flex items-center justify-center text-white font-bold text-base shadow-sm group-hover:scale-110 group-hover:rotate-3 group-hover:shadow-blue-500/20 active:scale-95 transition-all duration-300">
               ✓
             </div>
             <div>
-              <h1 className="text-[17px] font-semibold tracking-tight text-[#1d1d1f] leading-tight">
-                Buy or Wait?
+              <h1 className="text-[17px] font-semibold tracking-tight text-[#1d1d1f] dark:text-white leading-tight group-hover:text-[#0071e3] dark:group-hover:text-blue-400 transition-colors">
+                Should I Buy It?
               </h1>
-              <p className="text-[11px] text-[#86868b] tracking-tight">
+              <p className="text-[11px] text-[#86868b] dark:text-gray-400 tracking-tight">
                 AI Financial Commitment Assistant
               </p>
             </div>
           </div>
 
           {/* Centered Segmented Navigation Pills */}
-          <nav className="flex items-center p-1 bg-gray-200/60 rounded-full border border-black/[0.04] text-xs font-medium">
+          <nav className="flex items-center p-1 bg-gray-200/60 dark:bg-white/[0.08] rounded-full border border-black/[0.04] dark:border-white/[0.08] text-xs font-medium shadow-inner">
             <button
               onClick={() => setActiveTab("advisor")}
-              className={`px-4 py-1.5 rounded-full transition-all flex items-center gap-1.5 ${
+              className={`px-4 py-1.5 rounded-full transition-all duration-200 flex items-center gap-1.5 hover:scale-105 active:scale-95 ${
                 activeTab === "advisor"
-                  ? "bg-white text-gray-900 shadow-sm font-semibold"
-                  : "text-gray-600 hover:text-gray-900"
+                  ? "bg-white text-gray-900 shadow-sm font-semibold dark:bg-[#2c2c2e] dark:text-white dark:shadow-md"
+                  : "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
               }`}
             >
               <span>⚡</span>
@@ -518,26 +548,26 @@ export default function StandaloneApp() {
             </button>
             <button
               onClick={() => setActiveTab("history")}
-              className={`px-4 py-1.5 rounded-full transition-all flex items-center gap-1.5 ${
+              className={`px-4 py-1.5 rounded-full transition-all duration-200 flex items-center gap-1.5 hover:scale-105 active:scale-95 ${
                 activeTab === "history"
-                  ? "bg-white text-gray-900 shadow-sm font-semibold"
-                  : "text-gray-600 hover:text-gray-900"
+                  ? "bg-white text-gray-900 shadow-sm font-semibold dark:bg-[#2c2c2e] dark:text-white dark:shadow-md"
+                  : "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
               }`}
             >
               <span>📜</span>
               <span>History</span>
               {history.length > 0 && (
-                <span className="ml-0.5 px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-blue-100 text-blue-700">
+                <span className="ml-0.5 px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-blue-100 text-blue-700 dark:bg-blue-900/60 dark:text-blue-300 animate-pulse">
                   {history.length}
                 </span>
               )}
             </button>
             <button
               onClick={() => setActiveTab("profile")}
-              className={`px-4 py-1.5 rounded-full transition-all flex items-center gap-1.5 ${
+              className={`px-4 py-1.5 rounded-full transition-all duration-200 flex items-center gap-1.5 hover:scale-105 active:scale-95 ${
                 activeTab === "profile"
-                  ? "bg-white text-gray-900 shadow-sm font-semibold"
-                  : "text-gray-600 hover:text-gray-900"
+                  ? "bg-white text-gray-900 shadow-sm font-semibold dark:bg-[#2c2c2e] dark:text-white dark:shadow-md"
+                  : "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
               }`}
             >
               <span>👤</span>
@@ -547,19 +577,22 @@ export default function StandaloneApp() {
 
           {/* Right Action & User Profile Pill */}
           <div className="flex items-center space-x-2">
+            {/* Theme Selector (System / Light / Dark) */}
+            <ThemeToggle />
+
             {/* Dual Mode Indicator — always shows both, one active */}
-            <div className="hidden md:flex items-center gap-1 p-0.5 bg-gray-100 rounded-full border border-black/[0.04]">
+            <div className="hidden md:flex items-center gap-1 p-0.5 bg-gray-100 dark:bg-white/[0.06] rounded-full border border-black/[0.04] dark:border-white/[0.08]">
               <span
                 className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-medium transition-all ${
                   !authUser
-                    ? "bg-white text-gray-800 shadow-sm border border-gray-200"
-                    : "text-gray-400"
+                    ? "bg-white text-gray-800 shadow-sm border border-gray-200 dark:bg-[#2c2c2e] dark:text-gray-200 dark:border-white/10"
+                    : "text-gray-400 dark:text-gray-500"
                 }`}
                 title="Local Offline Mode — data stored on disk"
               >
                 <span
                   className={`w-1.5 h-1.5 rounded-full ${
-                    !authUser ? "bg-amber-500" : "bg-gray-300"
+                    !authUser ? "bg-amber-500" : "bg-gray-300 dark:bg-gray-600"
                   }`}
                 ></span>
                 Local
@@ -567,14 +600,14 @@ export default function StandaloneApp() {
               <span
                 className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-medium transition-all ${
                   authUser
-                    ? "bg-white text-sky-700 shadow-sm border border-sky-200"
-                    : "text-gray-400"
+                    ? "bg-white text-sky-700 shadow-sm border border-sky-200 dark:bg-[#2c2c2e] dark:text-sky-300 dark:border-sky-800/50"
+                    : "text-gray-400 dark:text-gray-500"
                 }`}
                 title="Connected to Supabase Cloud Database"
               >
                 <span
                   className={`w-1.5 h-1.5 rounded-full ${
-                    authUser ? "bg-sky-500 animate-pulse" : "bg-gray-300"
+                    authUser ? "bg-sky-500 animate-pulse" : "bg-gray-300 dark:bg-gray-600"
                   }`}
                 ></span>
                 Cloud
@@ -584,13 +617,13 @@ export default function StandaloneApp() {
             {/* User Session State */}
             {authUser ? (
               <div className="flex items-center gap-2">
-                <div className="hidden sm:flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-800 border border-emerald-200">
+                <div className="hidden sm:flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-800 border border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800/50">
                   <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                   <span className="max-w-[120px] truncate">{profile.name || authUser.email}</span>
                 </div>
                 <button
                   onClick={handleSignOut}
-                  className="px-3 py-1.5 rounded-full text-xs font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors"
+                  className="px-3 py-1.5 rounded-full text-xs font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-white/10 transition-colors"
                 >
                   Sign Out
                 </button>
@@ -617,7 +650,7 @@ export default function StandaloneApp() {
       <main className="flex-1 max-w-5xl w-full mx-auto px-6 py-8">
         {/* Highlighted Visitor Sign-In / Sign-Up Dialogue */}
         {!authUser && (
-          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-600/[0.09] via-indigo-600/[0.08] to-emerald-600/[0.09] border-2 border-[#0071e3]/30 p-5 sm:p-6 mb-8 shadow-sm backdrop-blur-md">
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-600/[0.09] via-indigo-600/[0.08] to-emerald-600/[0.09] dark:from-blue-500/10 dark:via-indigo-500/10 dark:to-emerald-500/10 border-2 border-[#0071e3]/30 dark:border-blue-400/30 p-5 sm:p-6 mb-8 shadow-sm backdrop-blur-md">
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
               <div className="flex items-start gap-4">
                 <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-[#0071e3] to-[#34a853] text-white flex items-center justify-center text-xl shadow-md shrink-0">
@@ -628,11 +661,11 @@ export default function StandaloneApp() {
                     <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#0071e3] text-white shadow-sm">
                       Visitor Tip
                     </span>
-                    <h3 className="text-sm sm:text-base font-bold text-[#1d1d1f]">
+                    <h3 className="text-sm sm:text-base font-bold text-[#1d1d1f] dark:text-white">
                       Sign in or create an account to save your profile & history
                     </h3>
                   </div>
-                  <p className="text-xs text-[#515154] leading-relaxed max-w-2xl">
+                  <p className="text-xs text-[#515154] dark:text-[#a1a1a6] leading-relaxed max-w-2xl">
                     You are currently using <strong>Local Mode</strong> without an account. Sign in or sign up to permanently save your custom financial profile configurations, access them across devices, and keep an auditable 90-day history of all your purchase evaluations.
                   </p>
                 </div>
@@ -647,7 +680,7 @@ export default function StandaloneApp() {
                     setAuthMessage(null);
                     setAuthModalOpen(true);
                   }}
-                  className="flex-1 md:flex-initial px-4 py-2.5 rounded-xl bg-white hover:bg-gray-50 text-gray-800 text-xs font-semibold border border-gray-200 shadow-sm transition-all hover:scale-105 active:scale-95 text-center cursor-pointer"
+                  className="flex-1 md:flex-initial px-4 py-2.5 rounded-xl bg-white hover:bg-gray-50 text-gray-800 dark:bg-[#2c2c2e] dark:hover:bg-[#3a3a3c] dark:text-white text-xs font-semibold border border-gray-200 dark:border-white/10 shadow-sm transition-all hover:scale-105 active:scale-95 text-center cursor-pointer"
                 >
                   Sign In
                 </button>
@@ -676,36 +709,36 @@ export default function StandaloneApp() {
           <div className="space-y-8">
             {/* Hero Banner */}
             <div className="text-center max-w-2xl mx-auto pt-2 pb-4">
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-[#e8f0fe] text-[#1a73e8] mb-3">
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-[#e8f0fe] text-[#1a73e8] dark:bg-blue-950/50 dark:text-blue-300 dark:border dark:border-blue-800/40 mb-3">
                 90-Day Liquidity Invariant Simulator
               </span>
-              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-[#1d1d1f] mb-2">
-                Should you buy now, plan, or wait?
+              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-[#1d1d1f] dark:text-white mb-2">
+                Should I buy it now, plan, or wait?
               </h2>
-              <p className="text-sm text-[#86868b] leading-relaxed">
+              <p className="text-sm text-[#86868b] dark:text-gray-400 leading-relaxed">
                 Enter any upcoming expense or purchase. Our engine verifies your recurring payroll, essential bills, and reserve buffer over the next 90 days with mathematical rigor.
               </p>
             </div>
 
             {/* Active Profile Bar */}
-            <div className="apple-card p-4 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-3 text-xs bg-white/90">
+            <div className="apple-card p-4 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-3 text-xs bg-white/90 dark:bg-[#1c1c1e]/90">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-blue-50 text-[#0071e3] font-bold flex items-center justify-center text-xs">
+                <div className="w-8 h-8 rounded-full bg-blue-50 text-[#0071e3] dark:bg-blue-950/60 dark:text-blue-400 font-bold flex items-center justify-center text-xs">
                   {profile.name ? profile.name.charAt(0).toUpperCase() : "G"}
                 </div>
                 <div>
-                  <span className="font-semibold text-gray-900 block">
+                  <span className="font-semibold text-gray-900 dark:text-white block">
                     Active Account: {profile.name || "Guest (Unsaved Profile)"}
                   </span>
-                  <span className="text-gray-500">
-                    Available: <strong className="text-gray-800">{profile.homeCurrency} {(profile.currentBalance || 0).toLocaleString()}</strong> | Reserve Buffer: <strong className="text-gray-800">{profile.homeCurrency} {(profile.minimumBalance || 0).toLocaleString()}</strong>
+                  <span className="text-gray-500 dark:text-gray-400">
+                    Available: <strong className="text-gray-800 dark:text-gray-200">{profile.homeCurrency} {(profile.currentBalance || 0).toLocaleString()}</strong> | Reserve Buffer: <strong className="text-gray-800 dark:text-gray-200">{profile.homeCurrency} {(profile.minimumBalance || 0).toLocaleString()}</strong>
                   </span>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => setActiveTab("profile")}
-                className="text-xs font-semibold text-[#0071e3] hover:underline"
+                className="text-xs font-semibold text-[#0071e3] dark:text-blue-400 hover:underline"
               >
                 Configure Profile & Bills →
               </button>
@@ -716,7 +749,7 @@ export default function StandaloneApp() {
               <form onSubmit={handleAnalyze} className="space-y-6">
                 {/* Question Input */}
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2">
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-2">
                     Purchase Description / Question
                   </label>
                   <textarea
@@ -724,19 +757,19 @@ export default function StandaloneApp() {
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     placeholder="e.g. Can I afford to buy a new laptop for $1,200 today?"
-                    className="w-full p-4 rounded-2xl bg-[#f5f5f7] border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#0071e3]/30 focus:border-[#0071e3] transition-all resize-none font-normal"
+                    className="w-full p-4 rounded-2xl bg-[#f5f5f7] dark:bg-[#151518] border border-gray-200 dark:border-white/10 text-[#1d1d1f] dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#0071e3]/30 focus:border-[#0071e3] transition-all resize-none font-normal placeholder:text-gray-400 dark:placeholder:text-gray-600"
                     required
                   />
 
                   {/* Preset Suggestions */}
                   <div className="mt-2.5 flex flex-wrap gap-1.5 items-center">
-                    <span className="text-[11px] text-gray-400 font-medium mr-1">Sample Scenarios:</span>
+                    <span className="text-[11px] text-gray-400 dark:text-gray-500 font-medium mr-1">Sample Scenarios:</span>
                     {PRESET_QUERIES.map((p, idx) => (
                       <button
                         key={idx}
                         type="button"
                         onClick={() => handlePresetSelect(p)}
-                        className="text-[11px] px-2.5 py-1 rounded-full bg-white hover:bg-gray-100 border border-gray-200 text-gray-600 transition-all font-medium"
+                        className="interactive-pill text-[11px] px-3 py-1 rounded-full bg-white dark:bg-[#2c2c2e] hover:bg-blue-50 dark:hover:bg-blue-950/40 hover:border-[#0071e3]/40 dark:hover:border-blue-500/40 hover:text-[#0071e3] dark:hover:text-blue-300 border border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-300 font-medium shadow-sm hover:shadow active:scale-95 transition-all duration-200 cursor-pointer"
                       >
                         {p.text.slice(0, 36)}...
                       </button>
@@ -747,7 +780,7 @@ export default function StandaloneApp() {
                 {/* Amount, Currency, Dates */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1.5">
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
                       Amount
                     </label>
                     <input
@@ -756,89 +789,84 @@ export default function StandaloneApp() {
                       min="1"
                       value={amount}
                       onChange={(e) => setAmount(Number(e.target.value))}
-                      className="w-full p-3 rounded-xl bg-[#f5f5f7] border border-gray-200 text-xs font-medium focus:ring-2 focus:ring-[#0071e3]/30"
+                      className="w-full p-3 rounded-xl bg-[#f5f5f7] dark:bg-[#151518] border border-gray-200 dark:border-white/10 text-[#1d1d1f] dark:text-white text-xs font-medium focus:ring-2 focus:ring-[#0071e3]/30"
                       required
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1.5">
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
                       Currency
                     </label>
                     <select
                       value={currency}
                       onChange={(e) => setCurrency(e.target.value)}
-                      className="w-full p-3 rounded-xl bg-[#f5f5f7] border border-gray-200 text-xs font-medium focus:ring-2 focus:ring-[#0071e3]/30"
+                      className="w-full p-3 rounded-xl bg-[#f5f5f7] dark:bg-[#151518] border border-gray-200 dark:border-white/10 text-[#1d1d1f] dark:text-white text-xs font-medium focus:ring-2 focus:ring-[#0071e3]/30"
                     >
                       <option value="USD">USD ($)</option>
                       <option value="EUR">EUR (€)</option>
                       <option value="GBP">GBP (£)</option>
                       <option value="INR">INR (₹)</option>
-                      <option value="CAD">CAD ($)</option>
-                      <option value="AUD">AUD ($)</option>
-                      <option value="JPY">JPY (¥)</option>
-                      <option value="IDR">IDR (Rp)</option>
-                      <option value="ZAR">ZAR (R)</option>
+                      <option value="CAD">CAD (C$)</option>
+                      <option value="AUD">AUD (A$)</option>
                     </select>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1.5">
-                      Purchase Date
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
+                      Request Date
                     </label>
                     <input
                       type="date"
                       value={requestDate}
                       onChange={(e) => setRequestDate(e.target.value)}
-                      className="w-full p-3 rounded-xl bg-[#f5f5f7] border border-gray-200 text-xs font-medium focus:ring-2 focus:ring-[#0071e3]/30"
+                      className="w-full p-3 rounded-xl bg-[#f5f5f7] dark:bg-[#151518] border border-gray-200 dark:border-white/10 text-[#1d1d1f] dark:text-white text-xs font-medium focus:ring-2 focus:ring-[#0071e3]/30"
                       required
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1.5">
-                      Target Completion Date
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
+                      Target Safe Date
                     </label>
                     <input
                       type="date"
                       value={desiredDate}
                       onChange={(e) => setDesiredDate(e.target.value)}
-                      className="w-full p-3 rounded-xl bg-[#f5f5f7] border border-gray-200 text-xs font-medium focus:ring-2 focus:ring-[#0071e3]/30"
+                      className="w-full p-3 rounded-xl bg-[#f5f5f7] dark:bg-[#151518] border border-gray-200 dark:border-white/10 text-[#1d1d1f] dark:text-white text-xs font-medium focus:ring-2 focus:ring-[#0071e3]/30"
                     />
                   </div>
                 </div>
 
-                {/* Additional Options */}
-                <div className="flex flex-wrap items-center justify-between gap-4 pt-2 border-t border-gray-100">
-                  <label className="flex items-center space-x-2 text-xs font-medium text-gray-700 cursor-pointer">
+                {/* Partial Payment Options & Document Attachment */}
+                <div className="p-4 rounded-2xl bg-[#f5f5f7]/60 dark:bg-[#151518]/60 border border-gray-200/80 dark:border-white/10 space-y-3">
+                  <div className="flex items-center space-x-3">
                     <input
                       type="checkbox"
+                      id="partial-check"
                       checked={allowsPartial}
                       onChange={(e) => setAllowsPartial(e.target.checked)}
-                      className="w-4 h-4 rounded text-[#0071e3] focus:ring-0"
+                      className="h-4 w-4 rounded text-[#0071e3] focus:ring-[#0071e3] border-gray-300 dark:border-white/20 bg-white dark:bg-[#2c2c2e]"
                     />
-                    <span>Allow 2-phase partial payment schedule if full payment is unsafe today</span>
-                  </label>
-                </div>
+                    <label htmlFor="partial-check" className="text-xs font-medium text-gray-700 dark:text-gray-300 cursor-pointer">
+                      I am open to financing, installments, or split payments (e.g. 3 to 6 months)
+                    </label>
+                  </div>
 
-                {/* Receipt Upload Section */}
-                <div className="pt-4 border-t border-gray-100">
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2">
-                    Optional: Attach Bill, Invoice, or Receipt
-                  </label>
-                  <div className="flex flex-col sm:flex-row gap-3 items-center">
-                    <div className="flex-1 w-full border-2 border-dashed border-gray-200 hover:border-[#0071e3]/50 rounded-2xl p-3 text-center cursor-pointer transition-colors bg-gray-50/50">
+                  {/* Document & Receipt OCR / Extraction */}
+                  <div className="pt-2 border-t border-gray-200/60 dark:border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                    <div className="flex items-center space-x-2">
                       <input
                         type="file"
                         id="doc-upload"
-                        accept="image/*,.pdf,.csv"
+                        accept=".pdf,.png,.jpg,.jpeg"
                         onChange={handleFileUpload}
                         className="hidden"
                       />
                       <label htmlFor="doc-upload" className="cursor-pointer block">
-                        <span className="text-xs text-gray-600 font-medium">
+                        <span className="text-xs text-gray-600 dark:text-gray-400 font-medium">
                           {uploadedFileName ? (
-                            <span className="text-[#0071e3] font-semibold">📎 Attached: {uploadedFileName}</span>
+                            <span className="text-[#0071e3] dark:text-blue-400 font-semibold">📎 Attached: {uploadedFileName}</span>
                           ) : (
                             <span>Click to upload receipt or bill (PNG, JPG, PDF)</span>
                           )}
@@ -853,7 +881,7 @@ export default function StandaloneApp() {
                           setUploadedFileName("");
                           setReceiptAmount(null);
                         }}
-                        className="text-xs text-rose-600 hover:underline px-2 py-1 font-medium"
+                        className="text-xs text-rose-600 dark:text-rose-400 hover:underline px-2 py-1 font-medium"
                       >
                         Remove
                       </button>
@@ -862,13 +890,13 @@ export default function StandaloneApp() {
 
                   {/* Sample Receipts */}
                   <div className="mt-2 flex flex-wrap gap-1.5 items-center">
-                    <span className="text-[11px] text-gray-400 font-medium mr-1">Quick Sample Invoices:</span>
+                    <span className="text-[11px] text-gray-400 dark:text-gray-500 font-medium mr-1">Quick Sample Invoices:</span>
                     {SAMPLE_RECEIPTS.map((doc, idx) => (
                       <button
                         key={idx}
                         type="button"
                         onClick={() => handleAttachReceipt(doc)}
-                        className="text-[10px] px-2 py-0.5 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 transition-colors"
+                        className="interactive-pill text-[10px] px-2.5 py-1 rounded-full bg-gray-100 dark:bg-[#2c2c2e] hover:bg-blue-50 dark:hover:bg-blue-950/40 hover:border-blue-200 dark:hover:border-blue-800 hover:text-[#0071e3] dark:hover:text-blue-300 text-gray-600 dark:text-gray-300 font-medium transition-all duration-200 cursor-pointer shadow-xs"
                       >
                         + {doc.label}
                       </button>
@@ -881,7 +909,7 @@ export default function StandaloneApp() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="px-8 py-3.5 rounded-2xl bg-[#0071e3] hover:bg-[#0077ed] text-white font-semibold text-xs shadow-md shadow-blue-500/20 disabled:opacity-50 transition-all flex items-center gap-2 cursor-pointer"
+                    className="group px-8 py-3.5 rounded-2xl bg-gradient-to-r from-[#0071e3] via-[#0077ed] to-[#005bb5] hover:from-[#0077ed] hover:to-[#0066cc] text-white font-semibold text-xs shadow-md shadow-blue-500/20 hover:shadow-lg hover:shadow-blue-500/30 hover:-translate-y-0.5 active:scale-98 disabled:opacity-50 disabled:pointer-events-none transition-all duration-200 flex items-center gap-2 cursor-pointer"
                   >
                     {loading ? (
                       <>
@@ -894,7 +922,7 @@ export default function StandaloneApp() {
                     ) : (
                       <>
                         <span>Verify Affordability</span>
-                        <span>→</span>
+                        <span className="group-hover:translate-x-1 transition-transform duration-200">→</span>
                       </>
                     )}
                   </button>
@@ -913,83 +941,90 @@ export default function StandaloneApp() {
             {/* Dynamic Results Presentation */}
             {/* ===================================================================== */}
             {result && (
-              <div className="apple-card rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+              <div className="apple-card rounded-3xl p-6 sm:p-8 shadow-sm space-y-6 animate-fadeInUp">
                 {/* Result Header Badge */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-gray-100">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-gray-100 dark:border-white/10">
                   <div className="flex items-center space-x-3">
                     <span
-                      className={`inline-flex items-center px-3.5 py-1.5 rounded-full text-xs font-bold border ${
+                      className={`inline-flex items-center px-3.5 py-1.5 rounded-full text-xs font-bold border transition-transform duration-200 hover:scale-105 cursor-default shadow-xs ${
                         getStatusBadge(result.decision.affordability_status).bg
                       }`}
                     >
-                      <span
-                        className={`w-2 h-2 rounded-full mr-2 ${
-                          getStatusBadge(result.decision.affordability_status).dot
-                        }`}
-                      ></span>
+                      <span className="relative flex h-2 w-2 mr-2">
+                        <span
+                          className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
+                            getStatusBadge(result.decision.affordability_status).dot
+                          }`}
+                        />
+                        <span
+                          className={`relative inline-flex rounded-full h-2 w-2 ${
+                            getStatusBadge(result.decision.affordability_status).dot
+                          }`}
+                        />
+                      </span>
                       {getStatusBadge(result.decision.affordability_status).label}
                     </span>
-                    <span className="text-xs text-gray-500 font-medium">
-                      Method: <strong className="text-gray-800 uppercase">{result.decision.recommended_payment_method.replace("_", " ")}</strong>
+                    <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                      Method: <strong className="text-gray-800 dark:text-gray-200 uppercase">{result.decision.recommended_payment_method.replace("_", " ")}</strong>
                     </span>
                   </div>
 
-                  <span className="text-[11px] text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200 font-medium">
+                  <span className="text-[11px] text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 dark:text-emerald-300 px-2.5 py-1 rounded-full border border-emerald-200 dark:border-emerald-800/50 font-medium">
                     ✓ Saved to Decision History
                   </span>
                 </div>
 
                 {/* Key Metrics Row */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="p-4 rounded-2xl bg-[#f5f5f7]">
-                    <span className="text-[11px] uppercase tracking-wider text-gray-500 font-semibold block">
+                  <div className="hover-lift p-4 rounded-2xl bg-[#f5f5f7] dark:bg-[#151518] border border-transparent dark:border-white/10 hover:border-blue-300/40 dark:hover:border-blue-500/30 hover:shadow-sm transition-all cursor-default">
+                    <span className="text-[11px] uppercase tracking-wider text-gray-500 dark:text-gray-400 font-semibold block">
                       Safe to Pay Today
                     </span>
-                    <span className="text-xl font-bold text-gray-900 mt-1 block">
+                    <span className="text-xl font-bold text-gray-900 dark:text-white mt-1 block">
                       {result.profile.home_currency} {Number(result.decision.amount_safe_to_pay).toLocaleString()}
                     </span>
                   </div>
 
-                  <div className="p-4 rounded-2xl bg-[#f5f5f7]">
-                    <span className="text-[11px] uppercase tracking-wider text-gray-500 font-semibold block">
+                  <div className="hover-lift p-4 rounded-2xl bg-[#f5f5f7] dark:bg-[#151518] border border-transparent dark:border-white/10 hover:border-blue-300/40 dark:hover:border-blue-500/30 hover:shadow-sm transition-all cursor-default">
+                    <span className="text-[11px] uppercase tracking-wider text-gray-500 dark:text-gray-400 font-semibold block">
                       Earliest Safe Full Date
                     </span>
-                    <span className="text-sm font-bold text-gray-900 mt-1 block">
+                    <span className="text-sm font-bold text-gray-900 dark:text-white mt-1 block">
                       {result.decision.earliest_date_for_full_payment || "Beyond 90 Days"}
                     </span>
                   </div>
 
-                  <div className="p-4 rounded-2xl bg-[#f5f5f7]">
-                    <span className="text-[11px] uppercase tracking-wider text-gray-500 font-semibold block">
+                  <div className="hover-lift p-4 rounded-2xl bg-[#f5f5f7] dark:bg-[#151518] border border-transparent dark:border-white/10 hover:border-blue-300/40 dark:hover:border-blue-500/30 hover:shadow-sm transition-all cursor-default">
+                    <span className="text-[11px] uppercase tracking-wider text-gray-500 dark:text-gray-400 font-semibold block">
                       Current Account
                     </span>
-                    <span className="text-sm font-bold text-gray-900 mt-1 block">
+                    <span className="text-sm font-bold text-gray-900 dark:text-white mt-1 block">
                       {result.profile.home_currency} {result.profile.current_balance.toLocaleString()}
                     </span>
                   </div>
 
-                  <div className="p-4 rounded-2xl bg-[#f5f5f7]">
-                    <span className="text-[11px] uppercase tracking-wider text-gray-500 font-semibold block">
+                  <div className="hover-lift p-4 rounded-2xl bg-[#f5f5f7] dark:bg-[#151518] border border-transparent dark:border-white/10 hover:border-blue-300/40 dark:hover:border-blue-500/30 hover:shadow-sm transition-all cursor-default">
+                    <span className="text-[11px] uppercase tracking-wider text-gray-500 dark:text-gray-400 font-semibold block">
                       Reserve Shield
                     </span>
-                    <span className="text-sm font-bold text-gray-900 mt-1 block">
+                    <span className="text-sm font-bold text-gray-900 dark:text-white mt-1 block">
                       {result.profile.home_currency} {result.profile.minimum_balance.toLocaleString()}
                     </span>
                   </div>
                 </div>
 
                 {/* Recommendation Plain English */}
-                <div className="p-5 rounded-2xl bg-gradient-to-r from-blue-50/70 to-emerald-50/70 border border-blue-100 text-gray-900 text-sm leading-relaxed font-medium">
+                <div className="hover-lift p-5 rounded-2xl bg-gradient-to-r from-blue-50/70 to-emerald-50/70 dark:from-blue-950/30 dark:to-emerald-950/30 border border-blue-100 dark:border-blue-800/40 text-gray-900 dark:text-gray-200 text-sm leading-relaxed font-medium shadow-xs">
                   {result.decision.decision_explanation}
                 </div>
 
                 {/* Trajectory Forward Chart */}
                 {result.trajectory && result.trajectory.length > 0 && (
                   <div className="space-y-2">
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-gray-400">
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">
                       90-Day Balance Forward Trajectory Forecast
                     </h4>
-                    <div className="bg-gray-50 p-5 rounded-2xl border border-gray-100">
+                    <div className="hover-lift bg-gray-50 dark:bg-[#151518] p-5 rounded-2xl border border-gray-100 dark:border-white/10 transition-all">
                       <div className="relative h-44 w-full">
                         <svg className="w-full h-full overflow-visible" viewBox="0 0 500 150" preserveAspectRatio="none">
                           {(() => {
@@ -1021,19 +1056,19 @@ export default function StandaloneApp() {
                                   strokeDasharray="4 4"
                                   strokeWidth="1.5"
                                 />
-                                <polyline fill="none" stroke="#0071e3" strokeWidth="2.5" points={points} />
+                                <polyline className="chart-line" fill="none" stroke="#0071e3" strokeWidth="2.5" points={points} />
                               </>
                             );
                           })()}
                         </svg>
                       </div>
-                      <div className="flex justify-between items-center text-[11px] text-gray-400 mt-2 px-1">
+                      <div className="flex justify-between items-center text-[11px] text-gray-400 dark:text-gray-500 mt-2 px-1">
                         <span>Day 0 ({requestDate})</span>
-                        <span className="text-red-500 font-semibold flex items-center">
+                        <span className="text-red-500 dark:text-red-400 font-semibold flex items-center">
                           <span className="w-3 h-0.5 bg-red-500 inline-block mr-1"></span>
                           Min Reserve: {result.profile.home_currency} {result.profile.minimum_balance.toLocaleString()}
                         </span>
-                        <span className="text-blue-600 font-semibold flex items-center">
+                        <span className="text-blue-600 dark:text-blue-400 font-semibold flex items-center">
                           <span className="w-3 h-0.5 bg-blue-600 inline-block mr-1"></span>
                           Projected Balance
                         </span>
@@ -1046,17 +1081,17 @@ export default function StandaloneApp() {
                 {/* Payment Plan Timeline */}
                 {result.decision.payment_plan && result.decision.payment_plan !== "none" && (
                   <div className="space-y-2">
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-gray-400">
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">
                       Recommended Payment Schedule
                     </h4>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                       {result.decision.payment_plan.split("|").map((entry, idx) => {
                         const [pDate, pAmt] = entry.split(":");
                         return (
-                          <div key={idx} className="p-4 rounded-xl bg-gray-50 border border-gray-100 text-xs">
-                            <span className="text-gray-400 block font-medium">Payment {idx + 1}</span>
-                            <span className="font-semibold text-gray-800 block text-sm mt-0.5">{pDate}</span>
-                            <span className="font-bold text-[#0071e3] mt-1 block">
+                          <div key={idx} className="hover-lift p-4 rounded-xl bg-gray-50 dark:bg-[#151518] border border-gray-100 dark:border-white/10 hover:border-blue-200 dark:hover:border-blue-900/50 text-xs transition-all cursor-default">
+                            <span className="text-gray-400 dark:text-gray-500 block font-medium">Payment {idx + 1}</span>
+                            <span className="font-semibold text-gray-800 dark:text-gray-200 block text-sm mt-0.5">{pDate}</span>
+                            <span className="font-bold text-[#0071e3] dark:text-blue-400 mt-1 block">
                               {result.profile.home_currency} {Number(pAmt).toLocaleString()}
                             </span>
                           </div>
@@ -1069,14 +1104,14 @@ export default function StandaloneApp() {
                 {/* Spending Adjustments */}
                 {result.decision.spending_changes_needed && result.decision.spending_changes_needed !== "none" && (
                   <div className="space-y-2">
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-gray-400">
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">
                       Identified Flexible Spending Changes Needed
                     </h4>
                     <div className="flex flex-wrap gap-2">
                       {result.decision.spending_changes_needed.split("|").map((sc, idx) => (
                         <span
                           key={idx}
-                          className="px-3 py-1.5 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200"
+                          className="interactive-pill px-3 py-1.5 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800/50 shadow-2xs cursor-default"
                         >
                           {sc}
                         </span>
@@ -1124,10 +1159,10 @@ export default function StandaloneApp() {
             {/* Header & Stats Bar */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <h2 className="text-2xl font-bold tracking-tight text-[#1d1d1f]">
+                <h2 className="text-2xl font-bold tracking-tight text-[#1d1d1f] dark:text-white">
                   Decision History
                 </h2>
-                <p className="text-xs text-gray-500 mt-0.5">
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
                   Audit and review all past purchase evaluations and 90-day trajectory checks.
                 </p>
               </div>
@@ -1135,7 +1170,7 @@ export default function StandaloneApp() {
               {history.length > 0 && (
                 <button
                   onClick={handleClearHistory}
-                  className="self-start sm:self-auto px-3 py-1.5 rounded-xl border border-gray-200 hover:border-rose-300 text-xs font-medium text-gray-600 hover:text-rose-600 transition-colors"
+                  className="self-start sm:self-auto px-3 py-1.5 rounded-xl border border-gray-200 hover:border-rose-300 dark:border-white/10 dark:hover:border-rose-500 text-xs font-medium text-gray-600 hover:text-rose-600 dark:text-gray-400 dark:hover:text-rose-400 transition-colors"
                 >
                   Clear History
                 </button>
@@ -1144,25 +1179,25 @@ export default function StandaloneApp() {
 
             {/* Stats Overview Pill Cards */}
             <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-              <div className="p-3 rounded-2xl bg-white border border-gray-100 shadow-sm text-center">
-                <span className="text-[11px] text-gray-400 font-medium block">Total Checks</span>
-                <span className="text-lg font-bold text-gray-800">{historyStats.total}</span>
+              <div className="p-3 rounded-2xl bg-white dark:bg-[#1c1c1e] border border-gray-100 dark:border-white/10 shadow-sm text-center">
+                <span className="text-[11px] text-gray-400 dark:text-gray-500 font-medium block">Total Checks</span>
+                <span className="text-lg font-bold text-gray-800 dark:text-gray-100">{historyStats.total}</span>
               </div>
-              <div className="p-3 rounded-2xl bg-emerald-50/60 border border-emerald-100 text-center">
-                <span className="text-[11px] text-emerald-600 font-medium block">Affordable Now</span>
-                <span className="text-lg font-bold text-emerald-700">{historyStats.affordableNow}</span>
+              <div className="p-3 rounded-2xl bg-emerald-50/60 dark:bg-emerald-950/30 border border-emerald-100 dark:border-emerald-800/40 text-center">
+                <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-medium block">Affordable Now</span>
+                <span className="text-lg font-bold text-emerald-700 dark:text-emerald-300">{historyStats.affordableNow}</span>
               </div>
-              <div className="p-3 rounded-2xl bg-blue-50/60 border border-blue-100 text-center">
-                <span className="text-[11px] text-blue-600 font-medium block">With Plan</span>
-                <span className="text-lg font-bold text-blue-700">{historyStats.withPlan}</span>
+              <div className="p-3 rounded-2xl bg-blue-50/60 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-800/40 text-center">
+                <span className="text-[11px] text-blue-600 dark:text-blue-400 font-medium block">With Plan</span>
+                <span className="text-lg font-bold text-blue-700 dark:text-blue-300">{historyStats.withPlan}</span>
               </div>
-              <div className="p-3 rounded-2xl bg-amber-50/60 border border-amber-100 text-center">
-                <span className="text-[11px] text-amber-600 font-medium block">Wait (Later)</span>
-                <span className="text-lg font-bold text-amber-700">{historyStats.later}</span>
+              <div className="p-3 rounded-2xl bg-amber-50/60 dark:bg-amber-950/30 border border-amber-100 dark:border-amber-800/40 text-center">
+                <span className="text-[11px] text-amber-600 dark:text-amber-400 font-medium block">Wait (Later)</span>
+                <span className="text-lg font-bold text-amber-700 dark:text-amber-300">{historyStats.later}</span>
               </div>
-              <div className="p-3 rounded-2xl bg-rose-50/60 border border-rose-100 text-center">
-                <span className="text-[11px] text-rose-600 font-medium block">Not Affordable</span>
-                <span className="text-lg font-bold text-rose-700">{historyStats.notAffordable}</span>
+              <div className="p-3 rounded-2xl bg-rose-50/60 dark:bg-rose-950/30 border border-rose-100 dark:border-rose-800/40 text-center">
+                <span className="text-[11px] text-rose-600 dark:text-rose-400 font-medium block">Not Affordable</span>
+                <span className="text-lg font-bold text-rose-700 dark:text-rose-300">{historyStats.notAffordable}</span>
               </div>
             </div>
 
@@ -1174,9 +1209,9 @@ export default function StandaloneApp() {
                   value={historySearch}
                   onChange={(e) => setHistorySearch(e.target.value)}
                   placeholder="Search evaluations..."
-                  className="w-full pl-9 pr-3 py-2 rounded-xl bg-white border border-gray-200 text-xs focus:ring-2 focus:ring-[#0071e3]/30"
+                  className="w-full pl-9 pr-3 py-2 rounded-xl bg-white dark:bg-[#151518] border border-gray-200 dark:border-white/10 text-[#1d1d1f] dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-600 text-xs focus:ring-2 focus:ring-[#0071e3]/30"
                 />
-                <span className="absolute left-3 top-2.5 text-gray-400 text-xs">🔍</span>
+                <span className="absolute left-3 top-2.5 text-gray-400 dark:text-gray-500 text-xs">🔍</span>
               </div>
 
               {/* Status Filter Chips */}
@@ -1193,8 +1228,8 @@ export default function StandaloneApp() {
                     onClick={() => setHistoryStatusFilter(chip.id)}
                     className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${
                       historyStatusFilter === chip.id
-                        ? "bg-gray-900 text-white shadow-sm"
-                        : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50"
+                        ? "bg-gray-900 text-white dark:bg-white dark:text-gray-900 shadow-sm"
+                        : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 dark:bg-[#1c1c1e] dark:text-gray-300 dark:border-white/10 dark:hover:bg-[#2c2c2e]"
                     }`}
                   >
                     {chip.label}
@@ -1205,14 +1240,14 @@ export default function StandaloneApp() {
 
             {/* History List */}
             {historyLoading ? (
-              <div className="text-center py-12 text-xs text-gray-400">Loading history...</div>
+              <div className="text-center py-12 text-xs text-gray-400 dark:text-gray-500">Loading history...</div>
             ) : filteredHistory.length === 0 ? (
               <div className="apple-card p-12 rounded-3xl text-center">
-                <div className="w-12 h-12 rounded-full bg-gray-100 text-gray-400 flex items-center justify-center mx-auto mb-3 text-lg">
+                <div className="w-12 h-12 rounded-full bg-gray-100 dark:bg-[#2c2c2e] text-gray-400 dark:text-gray-500 flex items-center justify-center mx-auto mb-3 text-lg">
                   📋
                 </div>
-                <h3 className="text-sm font-bold text-gray-800">No evaluations found</h3>
-                <p className="text-xs text-gray-500 mt-1 max-w-sm mx-auto">
+                <h3 className="text-sm font-bold text-gray-800 dark:text-white">No evaluations found</h3>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 max-w-sm mx-auto">
                   {historySearch || historyStatusFilter !== "all"
                     ? "Try adjusting your search filters or status tags."
                     : "You haven't run any evaluations yet. Check a purchase to see it logged here."}
@@ -1234,7 +1269,7 @@ export default function StandaloneApp() {
                     <div
                       key={item.id}
                       onClick={() => setExpandedHistoryId(isExpanded ? null : item.id)}
-                      className="apple-card p-5 rounded-2xl cursor-pointer hover:border-gray-300 transition-all space-y-3"
+                      className="apple-card p-5 rounded-2xl cursor-pointer hover:border-gray-300 dark:hover:border-white/20 transition-all space-y-3"
                     >
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                         <div className="flex items-center gap-2.5">
@@ -1244,24 +1279,24 @@ export default function StandaloneApp() {
                             <span className={`w-1.5 h-1.5 rounded-full mr-1.5 ${statusInfo.dot}`}></span>
                             {statusInfo.label}
                           </span>
-                          <span className="text-xs font-bold text-gray-800">
+                          <span className="text-xs font-bold text-gray-800 dark:text-gray-200">
                             {item.currency} {Number(item.amount).toLocaleString()}
                           </span>
                           {item.uploadedReceiptName && (
-                            <span className="text-[10px] bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">
+                            <span className="text-[10px] bg-gray-100 dark:bg-[#2c2c2e] text-gray-600 dark:text-gray-300 px-2 py-0.5 rounded-full">
                               📎 {item.uploadedReceiptName}
                             </span>
                           )}
                         </div>
 
                         <div className="flex items-center gap-2">
-                          <span className="text-[11px] text-gray-400">
+                          <span className="text-[11px] text-gray-400 dark:text-gray-500">
                             {new Date(item.createdAt).toLocaleDateString()} at{" "}
                             {new Date(item.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                           </span>
                           <button
                             onClick={(e) => handleDeleteHistoryItem(item.id, e)}
-                            className="p-1 rounded-lg text-gray-300 hover:text-rose-600 transition-colors"
+                            className="p-1 rounded-lg text-gray-300 dark:text-gray-600 hover:text-rose-600 dark:hover:text-rose-400 transition-colors"
                             title="Delete this record"
                           >
                             ✕
@@ -1270,40 +1305,40 @@ export default function StandaloneApp() {
                       </div>
 
                       {/* Query Text */}
-                      <p className="text-xs font-semibold text-gray-900">
+                      <p className="text-xs font-semibold text-gray-900 dark:text-white">
                         {item.query}
                       </p>
 
                       {/* Explanation Snippet */}
-                      <p className="text-xs text-gray-600 line-clamp-2">
+                      <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2">
                         {item.decision.decision_explanation}
                       </p>
 
                       {/* Expanded View */}
                       {isExpanded && (
-                        <div className="pt-4 border-t border-gray-100 space-y-4 mt-2" onClick={(e) => e.stopPropagation()}>
+                        <div className="pt-4 border-t border-gray-100 dark:border-white/10 space-y-4 mt-2" onClick={(e) => e.stopPropagation()}>
                           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-                            <div className="p-3 rounded-xl bg-gray-50">
-                              <span className="text-gray-400 block text-[10px] uppercase font-bold">Safe Today</span>
-                              <span className="font-bold text-gray-800 text-sm">
+                            <div className="p-3 rounded-xl bg-gray-50 dark:bg-[#151518] border border-transparent dark:border-white/10">
+                              <span className="text-gray-400 dark:text-gray-500 block text-[10px] uppercase font-bold">Safe Today</span>
+                              <span className="font-bold text-gray-800 dark:text-gray-200 text-sm">
                                 {item.currency} {Number(item.decision.amount_safe_to_pay).toLocaleString()}
                               </span>
                             </div>
-                            <div className="p-3 rounded-xl bg-gray-50">
-                              <span className="text-gray-400 block text-[10px] uppercase font-bold">Method</span>
-                              <span className="font-bold text-gray-800 text-sm uppercase">
+                            <div className="p-3 rounded-xl bg-gray-50 dark:bg-[#151518] border border-transparent dark:border-white/10">
+                              <span className="text-gray-400 dark:text-gray-500 block text-[10px] uppercase font-bold">Method</span>
+                              <span className="font-bold text-gray-800 dark:text-gray-200 text-sm uppercase">
                                 {item.decision.recommended_payment_method.replace("_", " ")}
                               </span>
                             </div>
-                            <div className="p-3 rounded-xl bg-gray-50">
-                              <span className="text-gray-400 block text-[10px] uppercase font-bold">Full Date</span>
-                              <span className="font-bold text-gray-800 text-sm">
+                            <div className="p-3 rounded-xl bg-gray-50 dark:bg-[#151518] border border-transparent dark:border-white/10">
+                              <span className="text-gray-400 dark:text-gray-500 block text-[10px] uppercase font-bold">Full Date</span>
+                              <span className="font-bold text-gray-800 dark:text-gray-200 text-sm">
                                 {item.decision.earliest_date_for_full_payment || "N/A"}
                               </span>
                             </div>
-                            <div className="p-3 rounded-xl bg-gray-50">
-                              <span className="text-gray-400 block text-[10px] uppercase font-bold">Account Buffer</span>
-                              <span className="font-bold text-gray-800 text-sm">
+                            <div className="p-3 rounded-xl bg-gray-50 dark:bg-[#151518] border border-transparent dark:border-white/10">
+                              <span className="text-gray-400 dark:text-gray-500 block text-[10px] uppercase font-bold">Account Buffer</span>
+                              <span className="font-bold text-gray-800 dark:text-gray-200 text-sm">
                                 {item.currency} {item.profileSnapshot.minimumBalance.toLocaleString()}
                               </span>
                             </div>
@@ -1312,7 +1347,7 @@ export default function StandaloneApp() {
                           {/* Payment Plan if present */}
                           {item.decision.payment_plan && item.decision.payment_plan !== "none" && (
                             <div className="space-y-1.5">
-                              <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider block">
+                              <span className="text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block">
                                 Payment Schedule
                               </span>
                               <div className="flex flex-wrap gap-2">
@@ -1321,7 +1356,7 @@ export default function StandaloneApp() {
                                   return (
                                     <span
                                       key={idx}
-                                      className="px-3 py-1 rounded-xl bg-blue-50 text-blue-800 border border-blue-100 text-xs font-medium"
+                                      className="px-3 py-1 rounded-xl bg-blue-50 text-blue-800 border border-blue-100 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-800/50 text-xs font-medium"
                                     >
                                       Payment {idx + 1}: {pDate} → {item.currency} {Number(pAmt).toLocaleString()}
                                     </span>
@@ -1334,14 +1369,14 @@ export default function StandaloneApp() {
                           {/* Spending Changes if present */}
                           {item.decision.spending_changes_needed && item.decision.spending_changes_needed !== "none" && (
                             <div className="space-y-1.5">
-                              <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider block">
+                              <span className="text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block">
                                 Spending Changes Required
                               </span>
                               <div className="flex flex-wrap gap-2">
                                 {item.decision.spending_changes_needed.split("|").map((sc, idx) => (
                                   <span
                                     key={idx}
-                                    className="px-2.5 py-1 rounded-full bg-amber-50 text-amber-800 border border-amber-200 text-xs font-semibold"
+                                    className="px-2.5 py-1 rounded-full bg-amber-50 text-amber-800 border border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800/50 text-xs font-semibold"
                                   >
                                     {sc}
                                   </span>
@@ -1368,16 +1403,16 @@ export default function StandaloneApp() {
           <div className="max-w-3xl mx-auto space-y-6">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-2xl font-bold tracking-tight text-[#1d1d1f]">
+                <h2 className="text-2xl font-bold tracking-tight text-[#1d1d1f] dark:text-white">
                   Financial Profile & Safeguards
                 </h2>
-                <p className="text-xs text-gray-500 mt-0.5">
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
                   Update your balances, confirmed income, and priority spending categories.
                 </p>
               </div>
 
               {profileSaveSuccess && (
-                <span className="px-3 py-1.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 animate-fade-in">
+                <span className="px-3 py-1.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800/50 animate-fade-in">
                   ✓ Profile Saved Live
                 </span>
               )}
@@ -1388,26 +1423,26 @@ export default function StandaloneApp() {
                 {/* Core Account Details */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1.5">
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
                       Account Owner Name
                     </label>
                     <input
                       type="text"
                       value={profile.name}
                       onChange={(e) => setProfile({ ...profile, name: e.target.value })}
-                      className="w-full p-3 rounded-xl bg-[#f5f5f7] border border-gray-200 text-xs font-medium focus:ring-2 focus:ring-[#0071e3]/30"
+                      className="w-full p-3 rounded-xl bg-[#f5f5f7] dark:bg-[#151518] border border-gray-200 dark:border-white/10 text-[#1d1d1f] dark:text-white text-xs font-medium focus:ring-2 focus:ring-[#0071e3]/30"
                       required
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1.5">
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
                       Home Currency
                     </label>
                     <select
                       value={profile.homeCurrency}
                       onChange={(e) => setProfile({ ...profile, homeCurrency: e.target.value })}
-                      className="w-full p-3 rounded-xl bg-[#f5f5f7] border border-gray-200 text-xs font-medium focus:ring-2 focus:ring-[#0071e3]/30"
+                      className="w-full p-3 rounded-xl bg-[#f5f5f7] dark:bg-[#151518] border border-gray-200 dark:border-white/10 text-[#1d1d1f] dark:text-white text-xs font-medium focus:ring-2 focus:ring-[#0071e3]/30"
                     >
                       <option value="USD">USD ($)</option>
                       <option value="EUR">EUR (€)</option>
@@ -1422,7 +1457,7 @@ export default function StandaloneApp() {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1.5">
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
                       Current Bank Balance ({profile.homeCurrency})
                     </label>
                     <input
@@ -1430,13 +1465,13 @@ export default function StandaloneApp() {
                       step="any"
                       value={profile.currentBalance}
                       onChange={(e) => setProfile({ ...profile, currentBalance: Number(e.target.value) })}
-                      className="w-full p-3 rounded-xl bg-[#f5f5f7] border border-gray-200 text-xs font-medium focus:ring-2 focus:ring-[#0071e3]/30"
+                      className="w-full p-3 rounded-xl bg-[#f5f5f7] dark:bg-[#151518] border border-gray-200 dark:border-white/10 text-[#1d1d1f] dark:text-white text-xs font-medium focus:ring-2 focus:ring-[#0071e3]/30"
                       required
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1.5">
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
                       Emergency Reserve Buffer ({profile.homeCurrency})
                     </label>
                     <input
@@ -1444,24 +1479,24 @@ export default function StandaloneApp() {
                       step="any"
                       value={profile.minimumBalance}
                       onChange={(e) => setProfile({ ...profile, minimumBalance: Number(e.target.value) })}
-                      className="w-full p-3 rounded-xl bg-[#f5f5f7] border border-gray-200 text-xs font-medium focus:ring-2 focus:ring-[#0071e3]/30"
+                      className="w-full p-3 rounded-xl bg-[#f5f5f7] dark:bg-[#151518] border border-gray-200 dark:border-white/10 text-[#1d1d1f] dark:text-white text-xs font-medium focus:ring-2 focus:ring-[#0071e3]/30"
                       required
                     />
-                    <p className="text-[10px] text-gray-400 mt-1">
+                    <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-1">
                       Balance will never be allowed to drop below this amount.
                     </p>
                   </div>
                 </div>
 
                 {/* Payroll & Fixed Recurring Bills */}
-                <div className="pt-4 border-t border-gray-100">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-3">
+                <div className="pt-4 border-t border-gray-100 dark:border-white/10">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-3">
                     Payroll & Monthly Fixed Commitments
                   </h4>
 
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div>
-                      <label className="block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1.5">
+                      <label className="block text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
                         Net Monthly Salary
                       </label>
                       <input
@@ -1469,13 +1504,13 @@ export default function StandaloneApp() {
                         step="any"
                         value={profile.monthlySalary}
                         onChange={(e) => setProfile({ ...profile, monthlySalary: Number(e.target.value) })}
-                        className="w-full p-3 rounded-xl bg-[#f5f5f7] border border-gray-200 text-xs font-medium focus:ring-2 focus:ring-[#0071e3]/30"
+                        className="w-full p-3 rounded-xl bg-[#f5f5f7] dark:bg-[#151518] border border-gray-200 dark:border-white/10 text-[#1d1d1f] dark:text-white text-xs font-medium focus:ring-2 focus:ring-[#0071e3]/30"
                         required
                       />
                     </div>
 
                     <div>
-                      <label className="block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1.5">
+                      <label className="block text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
                         Monthly Payday (Day 1-31)
                       </label>
                       <input
@@ -1484,13 +1519,13 @@ export default function StandaloneApp() {
                         max="31"
                         value={profile.payday}
                         onChange={(e) => setProfile({ ...profile, payday: Number(e.target.value) })}
-                        className="w-full p-3 rounded-xl bg-[#f5f5f7] border border-gray-200 text-xs font-medium focus:ring-2 focus:ring-[#0071e3]/30"
+                        className="w-full p-3 rounded-xl bg-[#f5f5f7] dark:bg-[#151518] border border-gray-200 dark:border-white/10 text-[#1d1d1f] dark:text-white text-xs font-medium focus:ring-2 focus:ring-[#0071e3]/30"
                         required
                       />
                     </div>
 
                     <div>
-                      <label className="block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1.5">
+                      <label className="block text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
                         Fixed Expenses (Rent/Bills)
                       </label>
                       <input
@@ -1498,7 +1533,7 @@ export default function StandaloneApp() {
                         step="any"
                         value={profile.monthlyFixedExpenses}
                         onChange={(e) => setProfile({ ...profile, monthlyFixedExpenses: Number(e.target.value) })}
-                        className="w-full p-3 rounded-xl bg-[#f5f5f7] border border-gray-200 text-xs font-medium focus:ring-2 focus:ring-[#0071e3]/30"
+                        className="w-full p-3 rounded-xl bg-[#f5f5f7] dark:bg-[#151518] border border-gray-200 dark:border-white/10 text-[#1d1d1f] dark:text-white text-xs font-medium focus:ring-2 focus:ring-[#0071e3]/30"
                         required
                       />
                     </div>
@@ -1506,14 +1541,14 @@ export default function StandaloneApp() {
                 </div>
 
                 {/* Categorization & Safeguards */}
-                <div className="pt-4 border-t border-gray-100 space-y-4">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-gray-400">
+                <div className="pt-4 border-t border-gray-100 dark:border-white/10 space-y-4">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">
                     Category Flexibility & Guardrails
                   </h4>
 
                   {/* Protected Categories */}
                   <div>
-                    <span className="text-xs font-semibold text-gray-700 block mb-1.5">
+                    <span className="text-xs font-semibold text-gray-700 dark:text-gray-300 block mb-1.5">
                       Protected Categories (Never Reduced or Stopped):
                     </span>
                     <div className="flex flex-wrap gap-1.5">
@@ -1524,8 +1559,8 @@ export default function StandaloneApp() {
                           onClick={() => toggleArrayItem("expenseCategoriesToProtect", c)}
                           className={`px-3 py-1 rounded-full text-xs font-medium capitalize transition-all ${
                             profile.expenseCategoriesToProtect.includes(c)
-                              ? "bg-emerald-100 text-emerald-800 border border-emerald-300 shadow-sm"
-                              : "bg-gray-100 text-gray-600 border border-gray-200"
+                              ? "bg-emerald-100 text-emerald-800 border border-emerald-300 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800/50 shadow-sm"
+                              : "bg-gray-100 text-gray-600 border border-gray-200 dark:bg-[#1c1c1e] dark:text-gray-400 dark:border-white/10"
                           }`}
                         >
                           {profile.expenseCategoriesToProtect.includes(c) ? "✓ " : ""}
@@ -1537,7 +1572,7 @@ export default function StandaloneApp() {
 
                   {/* Reducible Categories */}
                   <div>
-                    <span className="text-xs font-semibold text-gray-700 block mb-1.5">
+                    <span className="text-xs font-semibold text-gray-700 dark:text-gray-300 block mb-1.5">
                       Categories Willing to Reduce if Needed:
                     </span>
                     <div className="flex flex-wrap gap-1.5">
@@ -1548,8 +1583,8 @@ export default function StandaloneApp() {
                           onClick={() => toggleArrayItem("expenseCategoriesWillingToReduce", c)}
                           className={`px-3 py-1 rounded-full text-xs font-medium capitalize transition-all ${
                             profile.expenseCategoriesWillingToReduce.includes(c)
-                              ? "bg-blue-100 text-blue-800 border border-blue-300 shadow-sm"
-                              : "bg-gray-100 text-gray-600 border border-gray-200"
+                              ? "bg-blue-100 text-blue-800 border border-blue-300 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-800/50 shadow-sm"
+                              : "bg-gray-100 text-gray-600 border border-gray-200 dark:bg-[#1c1c1e] dark:text-gray-400 dark:border-white/10"
                           }`}
                         >
                           {profile.expenseCategoriesWillingToReduce.includes(c) ? "✓ " : ""}
@@ -1561,7 +1596,7 @@ export default function StandaloneApp() {
 
                   {/* Stoppable Subscriptions */}
                   <div>
-                    <span className="text-xs font-semibold text-gray-700 block mb-1.5">
+                    <span className="text-xs font-semibold text-gray-700 dark:text-gray-300 block mb-1.5">
                       Categories Willing to Stop / Pause:
                     </span>
                     <div className="flex flex-wrap gap-1.5">
@@ -1572,8 +1607,8 @@ export default function StandaloneApp() {
                           onClick={() => toggleArrayItem("expenseCategoriesWillingToStop", c)}
                           className={`px-3 py-1 rounded-full text-xs font-medium capitalize transition-all ${
                             profile.expenseCategoriesWillingToStop.includes(c)
-                              ? "bg-amber-100 text-amber-800 border border-amber-300 shadow-sm"
-                              : "bg-gray-100 text-gray-600 border border-gray-200"
+                              ? "bg-amber-100 text-amber-800 border border-amber-300 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800/50 shadow-sm"
+                              : "bg-gray-100 text-gray-600 border border-gray-200 dark:bg-[#1c1c1e] dark:text-gray-400 dark:border-white/10"
                           }`}
                         >
                           {profile.expenseCategoriesWillingToStop.includes(c) ? "✓ " : ""}
@@ -1585,14 +1620,14 @@ export default function StandaloneApp() {
                 </div>
 
                 {/* Payment Preferences */}
-                <div className="pt-4 border-t border-gray-100">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-3">
+                <div className="pt-4 border-t border-gray-100 dark:border-white/10">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-3">
                     Financing & Payment Methods
                   </h4>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
                     <div>
-                      <span className="text-xs font-semibold text-gray-700 block mb-2">
+                      <span className="text-xs font-semibold text-gray-700 dark:text-gray-300 block mb-2">
                         Accepted Methods:
                       </span>
                       <div className="flex flex-wrap gap-3">
@@ -1601,7 +1636,7 @@ export default function StandaloneApp() {
                           { id: "installments", label: "Installments" },
                           { id: "partial_payment", label: "Partial Payment" },
                         ].map((m) => (
-                          <label key={m.id} className="flex items-center space-x-2 text-xs cursor-pointer">
+                          <label key={m.id} className="flex items-center space-x-2 text-xs text-gray-700 dark:text-gray-300 cursor-pointer">
                             <input
                               type="checkbox"
                               checked={profile.paymentMethodsUserWillConsider.includes(m.id)}
@@ -1615,7 +1650,7 @@ export default function StandaloneApp() {
                     </div>
 
                     <div>
-                      <label className="block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1.5">
+                      <label className="block text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
                         Max Installment Duration ({profile.maxInstallmentMonths} Months)
                       </label>
                       <input
@@ -1626,7 +1661,7 @@ export default function StandaloneApp() {
                         onChange={(e) =>
                           setProfile({ ...profile, maxInstallmentMonths: Number(e.target.value) })
                         }
-                        className="w-full"
+                        className="w-full accent-[#0071e3]"
                       />
                     </div>
                   </div>
@@ -1635,7 +1670,7 @@ export default function StandaloneApp() {
                 {/* Save Button & Guest reminder */}
                 <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-3">
                   {!authUser ? (
-                    <div className="text-xs text-amber-700 bg-amber-50 border border-amber-200 px-3.5 py-2 rounded-xl flex items-center gap-2">
+                    <div className="text-xs text-amber-700 bg-amber-50 border border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800/50 px-3.5 py-2 rounded-xl flex items-center gap-2">
                       <span>💡</span>
                       <span>
                         Changes apply to current session only.{" "}
@@ -1647,7 +1682,7 @@ export default function StandaloneApp() {
                             setAuthMessage(null);
                             setAuthModalOpen(true);
                           }}
-                          className="font-semibold underline hover:text-amber-900 cursor-pointer"
+                          className="font-semibold underline hover:text-amber-900 dark:hover:text-amber-100 cursor-pointer"
                         >
                           Sign in or Sign up
                         </button>{" "}
@@ -1661,7 +1696,7 @@ export default function StandaloneApp() {
                   <button
                     type="submit"
                     disabled={profileSaving}
-                    className="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-gray-900 hover:bg-black text-white font-semibold text-xs shadow-sm transition-all disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
+                    className="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-gray-900 hover:bg-black text-white dark:bg-white dark:hover:bg-gray-100 dark:text-gray-900 font-semibold text-xs shadow-sm transition-all disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
                   >
                     {profileSaving ? (
                       <span>Saving to Storage...</span>
@@ -1677,24 +1712,257 @@ export default function StandaloneApp() {
             </div>
           </div>
         )}
+
+        {/* SEO Semantic Content & FAQ Section */}
+        <section
+          className="mt-20 pt-16 border-t border-gray-200/60 dark:border-white/10 space-y-16"
+          aria-label="Purchase Affordability Guide & Methodology"
+        >
+          {/* Section 1: Core Methodology */}
+          <div>
+            <div className="text-center max-w-2xl mx-auto mb-10">
+              <span className="px-3 py-1 rounded-full text-[11px] font-semibold tracking-wide uppercase bg-blue-50 text-[#0071e3] dark:bg-blue-950/40 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/40 inline-block mb-3">
+                Forward Cash Flow Modeling
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#1d1d1f] dark:text-white">
+                How &ldquo;Should I Buy It?&rdquo; Works
+              </h2>
+              <p className="mt-3 text-sm text-[#86868b] dark:text-[#a1a1a6] leading-relaxed">
+                Most impulse buys happen because people look at their current bank balance instead of their upcoming cash commitments. Our simulation engine projects every dollar across the next 90 days before you spend.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+              <div className="hover-lift p-6 rounded-3xl bg-white dark:bg-[#1c1c1e] border border-black/[0.06] dark:border-white/10 shadow-sm hover:border-[#0071e3]/40 dark:hover:border-blue-500/40 hover:shadow-lg transition-all duration-300 group cursor-default">
+                <div className="w-10 h-10 rounded-2xl bg-blue-50 dark:bg-blue-950/50 text-[#0071e3] dark:text-blue-400 flex items-center justify-center font-bold text-lg mb-4 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
+                  01
+                </div>
+                <h3 className="text-base font-semibold text-[#1d1d1f] dark:text-white mb-2 group-hover:text-[#0071e3] dark:group-hover:text-blue-400 transition-colors">
+                  90-Day Liquidity Curve
+                </h3>
+                <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] leading-relaxed">
+                  Calculates exact daily cash balances by harmonizing your recurring payday cycles with fixed monthly obligations like rent, utilities, and debt payments.
+                </p>
+              </div>
+
+              <div className="hover-lift p-6 rounded-3xl bg-white dark:bg-[#1c1c1e] border border-black/[0.06] dark:border-white/10 shadow-sm hover:border-emerald-500/40 dark:hover:border-emerald-500/40 hover:shadow-lg transition-all duration-300 group cursor-default">
+                <div className="w-10 h-10 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-lg mb-4 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
+                  02
+                </div>
+                <h3 className="text-base font-semibold text-[#1d1d1f] dark:text-white mb-2 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+                  Emergency Buffer Defense
+                </h3>
+                <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] leading-relaxed">
+                  Enforces your sacred reserve floor. If a prospective purchase causes your liquid funds to dip below your safety threshold at any point, the model flags it immediately.
+                </p>
+              </div>
+
+              <div className="hover-lift p-6 rounded-3xl bg-white dark:bg-[#1c1c1e] border border-black/[0.06] dark:border-white/10 shadow-sm hover:border-indigo-500/40 dark:hover:border-indigo-500/40 hover:shadow-lg transition-all duration-300 group cursor-default">
+                <div className="w-10 h-10 rounded-2xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-lg mb-4 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
+                  03
+                </div>
+                <h3 className="text-base font-semibold text-[#1d1d1f] dark:text-white mb-2 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                  Trough Risk Detection
+                </h3>
+                <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] leading-relaxed">
+                  Pinpoints the exact calendar dates when your liquid cash reaches its lowest vulnerability point, preventing overdrafts before the next payroll disbursement.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Section 2: 4 Decision Verdicts */}
+          <div>
+            <div className="text-center max-w-2xl mx-auto mb-10">
+              <span className="px-3 py-1 rounded-full text-[11px] font-semibold tracking-wide uppercase bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-800/40 inline-block mb-3">
+                Objective Decision Engine
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#1d1d1f] dark:text-white">
+                The 4 Decision Outcomes Demystified
+              </h2>
+              <p className="mt-3 text-sm text-[#86868b] dark:text-[#a1a1a6] leading-relaxed">
+                Rather than giving vague financial advice, &ldquo;Should I Buy It?&rdquo; generates one of four mathematically verifiable recommendations tailored to your cash position.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div className="hover-lift p-6 rounded-3xl bg-white dark:bg-[#1c1c1e] border border-black/[0.06] dark:border-white/10 shadow-sm hover:border-emerald-500/50 dark:hover:border-emerald-500/40 hover:shadow-md flex flex-col justify-between transition-all duration-300 cursor-default">
+                <div>
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800/50 mb-3">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    BUY NOW
+                  </div>
+                  <h3 className="text-base font-bold text-[#1d1d1f] dark:text-white mb-1.5">
+                    Safe to Purchase Immediately
+                  </h3>
+                  <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] leading-relaxed">
+                    Your 90-day liquidity simulation stays comfortably above your minimum emergency buffer across every upcoming bill payment and payroll cycle. No budget strain detected.
+                  </p>
+                </div>
+              </div>
+
+              <div className="hover-lift p-6 rounded-3xl bg-white dark:bg-[#1c1c1e] border border-black/[0.06] dark:border-white/10 shadow-sm hover:border-blue-500/50 dark:hover:border-blue-500/40 hover:shadow-md flex flex-col justify-between transition-all duration-300 cursor-default">
+                <div>
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-800/50 mb-3">
+                    <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+                    SAFE DELAY (WAIT)
+                  </div>
+                  <h3 className="text-base font-bold text-[#1d1d1f] dark:text-white mb-1.5">
+                    Affordable with Strategic Timing
+                  </h3>
+                  <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] leading-relaxed">
+                    Buying today creates a temporary cash squeeze before your next pay cycle. Postponing the purchase by 2 to 4 weeks aligns the expense with incoming cash flow seamlessly.
+                  </p>
+                </div>
+              </div>
+
+              <div className="hover-lift p-6 rounded-3xl bg-white dark:bg-[#1c1c1e] border border-black/[0.06] dark:border-white/10 shadow-sm hover:border-amber-500/50 dark:hover:border-amber-500/40 hover:shadow-md flex flex-col justify-between transition-all duration-300 cursor-default">
+                <div>
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800/50 mb-3">
+                    <span className="w-2 h-2 rounded-full bg-amber-500"></span>
+                    HIGH RISK
+                  </div>
+                  <h3 className="text-base font-bold text-[#1d1d1f] dark:text-white mb-1.5">
+                    Tight Margin of Error
+                  </h3>
+                  <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] leading-relaxed">
+                    The purchase is technically feasible with existing cash, but it depresses your discretionary cushion below 15%. Any single unexpected bill could cause an emergency breach.
+                  </p>
+                </div>
+              </div>
+
+              <div className="hover-lift p-6 rounded-3xl bg-white dark:bg-[#1c1c1e] border border-black/[0.06] dark:border-white/10 shadow-sm hover:border-rose-500/50 dark:hover:border-rose-500/40 hover:shadow-md flex flex-col justify-between transition-all duration-300 cursor-default">
+                <div>
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800/50 mb-3">
+                    <span className="w-2 h-2 rounded-full bg-rose-500"></span>
+                    DECLINE
+                  </div>
+                  <h3 className="text-base font-bold text-[#1d1d1f] dark:text-white mb-1.5">
+                    Not Recommended
+                  </h3>
+                  <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] leading-relaxed">
+                    Executing this purchase causes a severe buffer violation or projected negative balance. We strongly advise pausing or exploring structured installment alternatives.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Section 3: Frequently Asked Questions (FAQ) */}
+          <div>
+            <div className="text-center max-w-2xl mx-auto mb-10">
+              <span className="px-3 py-1 rounded-full text-[11px] font-semibold tracking-wide uppercase bg-purple-50 text-purple-700 dark:bg-purple-950/40 dark:text-purple-300 border border-purple-200/60 dark:border-purple-800/40 inline-block mb-3">
+                Knowledge Base
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#1d1d1f] dark:text-white">
+                Frequently Asked Questions
+              </h2>
+              <p className="mt-3 text-sm text-[#86868b] dark:text-[#a1a1a6] leading-relaxed">
+                Everything you need to know about evaluating discretionary purchases, cash flow simulations, and privacy.
+              </p>
+            </div>
+
+            <div className="space-y-3.5 max-w-3xl mx-auto">
+              {FAQ_ITEMS.map((faq, idx) => {
+                const isOpen = !!openFaqs[idx];
+                return (
+                  <div
+                    key={idx}
+                    className="rounded-2xl bg-white dark:bg-[#1c1c1e] border border-black/[0.06] dark:border-white/10 p-5 shadow-sm hover:border-[#0071e3]/30 dark:hover:border-white/20 transition-all duration-200"
+                  >
+                    <button
+                      type="button"
+                      onClick={() => toggleFaq(idx)}
+                      className="w-full text-left text-sm sm:text-base font-semibold text-[#1d1d1f] dark:text-white cursor-pointer flex items-center justify-between group select-none"
+                      aria-expanded={isOpen}
+                    >
+                      <span className="group-hover:text-[#0071e3] dark:group-hover:text-blue-400 transition-colors pr-4">
+                        {faq.question}
+                      </span>
+                      <span
+                        className={`text-xs text-gray-400 shrink-0 transition-transform duration-300 ease-out ${
+                          isOpen ? "rotate-180 text-[#0071e3] dark:text-blue-400" : "rotate-0"
+                        }`}
+                      >
+                        ▼
+                      </span>
+                    </button>
+                    <div
+                      className={`grid transition-all duration-300 ease-in-out ${
+                        isOpen ? "grid-rows-[1fr] opacity-100 mt-3" : "grid-rows-[0fr] opacity-0 mt-0"
+                      }`}
+                    >
+                      <div className="overflow-hidden">
+                        <p className="text-xs sm:text-sm text-[#515154] dark:text-[#a1a1a6] leading-relaxed">
+                          {faq.answer}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-gray-100 py-6 text-center text-xs text-gray-400">
-        Buy or Wait? — Verifiable AI Financial Commitment Assistant
+      {/* Enhanced Apple & Google Aesthetic Footer */}
+      <footer className="border-t border-gray-200/60 dark:border-white/10 py-8 mt-12 bg-white/40 dark:bg-[#0c0c0e]/40 backdrop-blur-sm">
+        <div className="max-w-5xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-400 dark:text-gray-500">
+          <div className="flex items-center gap-2">
+            <span className="w-5 h-5 rounded-lg bg-gradient-to-tr from-[#0071e3] to-[#34a853] flex items-center justify-center text-white font-bold text-[10px]">
+              ✓
+            </span>
+            <span className="font-semibold text-gray-700 dark:text-gray-300">
+              Should I Buy It?
+            </span>
+            <span className="hidden sm:inline">— AI Financial Commitment & 90-Day Liquidity Simulator</span>
+          </div>
+          <div className="flex items-center gap-4 text-[11px]">
+            <button
+              onClick={() => {
+                setActiveTab("advisor");
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+              className="hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+            >
+              Evaluate
+            </button>
+            <button
+              onClick={() => {
+                setActiveTab("history");
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+              className="hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+            >
+              History
+            </button>
+            <button
+              onClick={() => {
+                setActiveTab("profile");
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+              className="hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+            >
+              Profile
+            </button>
+            <span>•</span>
+            <span>Local & Cloud Mode</span>
+          </div>
+        </div>
       </footer>
 
       {/* Apple & Google Aesthetic Authentication Modal */}
       {authModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-fadeIn">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 dark:bg-black/70 backdrop-blur-md animate-fadeIn">
           <div
-            className="relative w-full max-w-md bg-white rounded-3xl p-7 shadow-2xl border border-black/[0.06] transition-all transform animate-scaleUp"
+            className="relative w-full max-w-md bg-white dark:bg-[#1c1c1e] rounded-3xl p-7 shadow-2xl border border-black/[0.06] dark:border-white/10 transition-all transform animate-scaleUp"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Close Button */}
             <button
               onClick={() => setAuthModalOpen(false)}
-              className="absolute top-5 right-5 w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500 flex items-center justify-center text-sm font-semibold transition-colors cursor-pointer"
+              className="absolute top-5 right-5 w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 dark:bg-white/10 dark:hover:bg-white/20 text-gray-500 dark:text-gray-300 flex items-center justify-center text-sm font-semibold transition-colors cursor-pointer"
             >
               ✕
             </button>
@@ -1704,10 +1972,10 @@ export default function StandaloneApp() {
               <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#0071e3] to-[#34a853] flex items-center justify-center text-white font-bold text-xl mx-auto mb-3 shadow-md">
                 ✓
               </div>
-              <h3 className="text-xl font-bold text-[#1d1d1f] tracking-tight">
+              <h3 className="text-xl font-bold text-[#1d1d1f] dark:text-white tracking-tight">
                 {authMode === "signin" ? "Sign In to Your Account" : "Create Your Account"}
               </h3>
-              <p className="text-xs text-[#86868b] mt-1">
+              <p className="text-xs text-[#86868b] dark:text-gray-400 mt-1">
                 {authMode === "signin"
                   ? "Access your isolated profiles, decisions, and history."
                   : "Start analyzing purchases with multi-user cloud isolation."}
@@ -1715,7 +1983,7 @@ export default function StandaloneApp() {
             </div>
 
             {/* Mode Switcher Pills */}
-            <div className="flex p-1 bg-gray-100 rounded-2xl mb-5 text-xs font-semibold">
+            <div className="flex p-1 bg-gray-100 dark:bg-white/[0.06] rounded-2xl mb-5 text-xs font-semibold">
               <button
                 type="button"
                 onClick={() => {
@@ -1725,8 +1993,8 @@ export default function StandaloneApp() {
                 }}
                 className={`flex-1 py-2 rounded-xl transition-all ${
                   authMode === "signin"
-                    ? "bg-white text-gray-900 shadow-sm"
-                    : "text-gray-500 hover:text-gray-900"
+                    ? "bg-white text-gray-900 dark:bg-[#2c2c2e] dark:text-white shadow-sm"
+                    : "text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
                 }`}
               >
                 Sign In
@@ -1740,8 +2008,8 @@ export default function StandaloneApp() {
                 }}
                 className={`flex-1 py-2 rounded-xl transition-all ${
                   authMode === "signup"
-                    ? "bg-white text-gray-900 shadow-sm"
-                    : "text-gray-500 hover:text-gray-900"
+                    ? "bg-white text-gray-900 dark:bg-[#2c2c2e] dark:text-white shadow-sm"
+                    : "text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
                 }`}
               >
                 Create Account
@@ -1750,20 +2018,20 @@ export default function StandaloneApp() {
 
             {/* Supabase unconfigured warning banner */}
             {!supabaseReady && (
-              <div className="mb-4 p-3 rounded-2xl bg-amber-50 border border-amber-200 text-amber-800 text-xs leading-relaxed">
+              <div className="mb-4 p-3 rounded-2xl bg-amber-50 border border-amber-200 dark:bg-amber-950/40 dark:border-amber-800/50 text-amber-800 dark:text-amber-300 text-xs leading-relaxed">
                 <strong className="block font-semibold mb-0.5">Demo Mode Active</strong>
-                Add your Supabase credentials to <code className="bg-amber-100/80 px-1 py-0.5 rounded font-mono text-[11px]">.env.local</code> to enable live cloud user accounts.
+                Add your Supabase credentials to <code className="bg-amber-100/80 dark:bg-amber-900/50 px-1 py-0.5 rounded font-mono text-[11px]">.env.local</code> to enable live cloud user accounts.
               </div>
             )}
 
             {/* Status & Error Alerts */}
             {authError && (
-              <div className="mb-4 p-3 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium">
+              <div className="mb-4 p-3 rounded-2xl bg-rose-50 border border-rose-200 dark:bg-rose-950/40 dark:border-rose-800/50 text-rose-700 dark:text-rose-300 text-xs font-medium">
                 {authError}
               </div>
             )}
             {authMessage && (
-              <div className="mb-4 p-3 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-medium">
+              <div className="mb-4 p-3 rounded-2xl bg-emerald-50 border border-emerald-200 dark:bg-emerald-950/40 dark:border-emerald-800/50 text-emerald-800 dark:text-emerald-300 text-xs font-medium">
                 {authMessage}
               </div>
             )}
@@ -1772,7 +2040,7 @@ export default function StandaloneApp() {
             <form onSubmit={handleAuthSubmit} className="space-y-4">
               {authMode === "signup" && (
                 <div>
-                  <label className="text-xs font-semibold text-gray-700 block mb-1.5">
+                  <label className="text-xs font-semibold text-gray-700 dark:text-gray-300 block mb-1.5">
                     Full Name
                   </label>
                   <input
@@ -1781,13 +2049,13 @@ export default function StandaloneApp() {
                     placeholder="Alex Morgan"
                     value={authFullName}
                     onChange={(e) => setAuthFullName(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#0071e3]/20 focus:border-[#0071e3] transition-all bg-gray-50/50 focus:bg-white"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 text-sm focus:outline-none focus:ring-2 focus:ring-[#0071e3]/20 focus:border-[#0071e3] transition-all bg-gray-50/50 focus:bg-white dark:bg-[#151518] dark:focus:bg-[#151518] text-[#1d1d1f] dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-600"
                   />
                 </div>
               )}
 
               <div>
-                <label className="text-xs font-semibold text-gray-700 block mb-1.5">
+                <label className="text-xs font-semibold text-gray-700 dark:text-gray-300 block mb-1.5">
                   Email Address
                 </label>
                 <input
@@ -1796,12 +2064,12 @@ export default function StandaloneApp() {
                   placeholder="name@example.com"
                   value={authEmail}
                   onChange={(e) => setAuthEmail(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#0071e3]/20 focus:border-[#0071e3] transition-all bg-gray-50/50 focus:bg-white"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 text-sm focus:outline-none focus:ring-2 focus:ring-[#0071e3]/20 focus:border-[#0071e3] transition-all bg-gray-50/50 focus:bg-white dark:bg-[#151518] dark:focus:bg-[#151518] text-[#1d1d1f] dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-600"
                 />
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-gray-700 block mb-1.5">
+                <label className="text-xs font-semibold text-gray-700 dark:text-gray-300 block mb-1.5">
                   Password
                 </label>
                 <input
@@ -1810,7 +2078,7 @@ export default function StandaloneApp() {
                   placeholder="••••••••"
                   value={authPassword}
                   onChange={(e) => setAuthPassword(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#0071e3]/20 focus:border-[#0071e3] transition-all bg-gray-50/50 focus:bg-white"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 text-sm focus:outline-none focus:ring-2 focus:ring-[#0071e3]/20 focus:border-[#0071e3] transition-all bg-gray-50/50 focus:bg-white dark:bg-[#151518] dark:focus:bg-[#151518] text-[#1d1d1f] dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-600"
                 />
               </div>
 
@@ -1829,7 +2097,7 @@ export default function StandaloneApp() {
               </button>
             </form>
 
-            <div className="mt-5 text-center text-xs text-gray-400">
+            <div className="mt-5 text-center text-xs text-gray-400 dark:text-gray-500">
               Secured with Supabase Row Level Security (RLS)
             </div>
           </div>

@@ -1,8 +1,8 @@
-# Buy or Wait? — Autonomous AI Financial Commitment Assistant
+# Should I Buy It? — Autonomous AI Financial Commitment Assistant
 
 An AI-powered personal financial decision assistant that decides whether you can safely afford a requested purchase or financial commitment.
 
-Instead of only checking your current bank balance, **Buy or Wait?** constructs a 90-day forward liquidity model. It accounts for your recurring payroll, essential bills (rent, utilities), subscriptions, upcoming debits, flexible discretionary categories, and your personal minimum emergency reserve buffer.
+Instead of only checking your current bank balance, **Should I Buy It?** constructs a 90-day forward liquidity model. It accounts for your recurring payroll, essential bills (rent, utilities), subscriptions, upcoming debits, flexible discretionary categories, and your personal minimum emergency reserve buffer.
 
 ---
 

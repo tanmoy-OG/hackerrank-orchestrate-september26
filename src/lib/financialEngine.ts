@@ -1,5 +1,5 @@
 /**
- * Buy or Wait? — Native TypeScript Financial Simulation Engine
+ * Should I Buy It? — Native TypeScript Financial Simulation Engine
  * Ported directly from code/main.py for native Vercel and Node.js deployment.
  * 
  * NOTE: As requested, the original Python implementation is preserved in
