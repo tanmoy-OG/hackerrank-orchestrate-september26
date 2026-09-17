@@ -588,28 +588,31 @@ export default function StandaloneApp() {
   return (
     <div className="min-h-screen flex flex-col bg-[#fbfbfd] dark:bg-[#000000] text-[#1d1d1f] dark:text-[#f5f5f7] transition-colors duration-200">
       {/* Sleek Apple + Google Header */}
-      <header className="sticky top-0 z-30 glass-nav">
-        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+      <header className="sticky top-0 z-30 glass-nav w-full">
+        <div className="max-w-6xl 2xl:max-w-7xl mx-auto px-2.5 sm:px-6 lg:px-8 h-14 sm:h-18 flex items-center justify-between gap-1.5 sm:gap-4">
           {/* Brand Logo & Name */}
-          <div className="flex items-center space-x-3 cursor-pointer group" onClick={() => setActiveTab("advisor")}>
-            <div className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-[#0071e3] to-[#34a853] flex items-center justify-center text-white font-bold text-base shadow-sm group-hover:scale-110 group-hover:rotate-3 group-hover:shadow-blue-500/20 active:scale-95 transition-all duration-300">
+          <div
+            className="flex items-center space-x-1.5 sm:space-x-3 cursor-pointer group min-w-0 shrink"
+            onClick={() => setActiveTab("advisor")}
+          >
+            <div className="w-7 h-7 sm:w-9 sm:h-9 rounded-xl sm:rounded-2xl bg-gradient-to-tr from-[#0071e3] to-[#34a853] flex items-center justify-center text-white font-bold text-xs sm:text-base shadow-sm group-hover:scale-110 group-hover:rotate-3 group-hover:shadow-blue-500/20 active:scale-95 transition-all duration-300 shrink-0">
               ✓
             </div>
-            <div>
-              <h1 className="text-[17px] font-semibold tracking-tight text-[#1d1d1f] dark:text-white leading-tight group-hover:text-[#0071e3] dark:group-hover:text-blue-400 transition-colors">
+            <div className="min-w-0">
+              <h1 className="text-xs xs:text-sm sm:text-[17px] font-semibold tracking-tight text-[#1d1d1f] dark:text-white leading-tight group-hover:text-[#0071e3] dark:group-hover:text-blue-400 transition-colors truncate">
                 Should I Buy It?
               </h1>
-              <p className="text-[11px] text-[#86868b] dark:text-gray-400 tracking-tight">
+              <p className="hidden md:block text-[11px] text-[#86868b] dark:text-gray-400 tracking-tight">
                 AI Financial Commitment Assistant
               </p>
             </div>
           </div>
 
-          {/* Centered Segmented Navigation Pills */}
-          <nav className="flex items-center p-1 bg-gray-200/60 dark:bg-white/[0.08] rounded-full border border-black/[0.04] dark:border-white/[0.08] text-xs font-medium shadow-inner">
+          {/* Centered Segmented Navigation Pills — Desktop & Tablet only */}
+          <nav className="hidden sm:flex items-center p-0.5 sm:p-1 bg-gray-200/60 dark:bg-white/[0.08] rounded-full border border-black/[0.04] dark:border-white/[0.08] text-xs font-medium shadow-inner shrink-0">
             <button
               onClick={() => setActiveTab("advisor")}
-              className={`px-4 py-1.5 rounded-full transition-all duration-200 flex items-center gap-1.5 hover:scale-105 active:scale-95 ${
+              className={`px-3 sm:px-4 py-1 sm:py-1.5 rounded-full transition-all duration-200 flex items-center gap-1 sm:gap-1.5 hover:scale-105 active:scale-95 cursor-pointer ${
                 activeTab === "advisor"
                   ? "bg-white text-gray-900 shadow-sm font-semibold dark:bg-[#2c2c2e] dark:text-white dark:shadow-md"
                   : "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
@@ -620,7 +623,7 @@ export default function StandaloneApp() {
             </button>
             <button
               onClick={() => setActiveTab("history")}
-              className={`px-4 py-1.5 rounded-full transition-all duration-200 flex items-center gap-1.5 hover:scale-105 active:scale-95 ${
+              className={`px-3 sm:px-4 py-1 sm:py-1.5 rounded-full transition-all duration-200 flex items-center gap-1 sm:gap-1.5 hover:scale-105 active:scale-95 cursor-pointer ${
                 activeTab === "history"
                   ? "bg-white text-gray-900 shadow-sm font-semibold dark:bg-[#2c2c2e] dark:text-white dark:shadow-md"
                   : "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
@@ -636,7 +639,7 @@ export default function StandaloneApp() {
             </button>
             <button
               onClick={() => setActiveTab("profile")}
-              className={`px-4 py-1.5 rounded-full transition-all duration-200 flex items-center gap-1.5 hover:scale-105 active:scale-95 ${
+              className={`px-3 sm:px-4 py-1 sm:py-1.5 rounded-full transition-all duration-200 flex items-center gap-1 sm:gap-1.5 hover:scale-105 active:scale-95 cursor-pointer ${
                 activeTab === "profile"
                   ? "bg-white text-gray-900 shadow-sm font-semibold dark:bg-[#2c2c2e] dark:text-white dark:shadow-md"
                   : "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
@@ -648,12 +651,44 @@ export default function StandaloneApp() {
           </nav>
 
           {/* Right Action & User Profile Pill */}
-          <div className="flex items-center space-x-2">
-            {/* Theme Selector (System / Light / Dark) */}
-            <ThemeToggle />
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            {/* Active Mode Indicator — Mobile & Tablet (< lg: Only Active Mode shown) */}
+            <div className="flex lg:hidden items-center shrink-0">
+              {!authUser ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAuthMode("signin");
+                    setAuthError(null);
+                    setAuthMessage(null);
+                    setAuthModalOpen(true);
+                  }}
+                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-amber-500/10 text-amber-800 dark:text-amber-300 border border-amber-500/25 shadow-2xs hover:bg-amber-500/20 active:scale-95 transition-all cursor-pointer shrink-0"
+                  title="Local Mode: Data stored on this device. Tap to sync with Cloud."
+                  aria-label="Local storage mode active. Tap to sync with Cloud."
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0"></span>
+                  <span className="leading-tight font-semibold">Local</span>
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveTab("profile");
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }}
+                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-sky-500/10 text-sky-800 dark:text-sky-300 border border-sky-500/25 shadow-2xs hover:bg-sky-500/20 active:scale-95 transition-all cursor-pointer shrink-0"
+                  title="Cloud Mode: Synced with Supabase. Tap to view profile."
+                  aria-label="Cloud sync mode active. Tap to view profile."
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-sky-500 animate-pulse shrink-0"></span>
+                  <span className="leading-tight font-semibold">Cloud</span>
+                </button>
+              )}
+            </div>
 
-            {/* Dual Mode Indicator — always shows both, one active */}
-            <div className="hidden md:flex items-center gap-1 p-0.5 bg-gray-100 dark:bg-white/[0.06] rounded-full border border-black/[0.04] dark:border-white/[0.08]">
+            {/* Dual Mode Indicator — Desktop (>= lg: Both Local & Cloud pills) */}
+            <div className="hidden lg:flex items-center gap-1 p-0.5 bg-gray-100 dark:bg-white/[0.06] rounded-full border border-black/[0.04] dark:border-white/[0.08]">
               <span
                 className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-medium transition-all ${
                   !authUser
@@ -669,13 +704,22 @@ export default function StandaloneApp() {
                 ></span>
                 Local
               </span>
-              <span
+              <button
+                type="button"
+                onClick={() => {
+                  if (!authUser) {
+                    setAuthMode("signin");
+                    setAuthError(null);
+                    setAuthMessage(null);
+                    setAuthModalOpen(true);
+                  }
+                }}
                 className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-medium transition-all ${
                   authUser
-                    ? "bg-white text-sky-700 shadow-sm border border-sky-200 dark:bg-[#2c2c2e] dark:text-sky-300 dark:border-sky-800/50"
-                    : "text-gray-400 dark:text-gray-500"
+                    ? "bg-white text-sky-700 shadow-sm border border-sky-200 dark:bg-[#2c2c2e] dark:text-sky-300 dark:border-sky-800/50 cursor-default"
+                    : "text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 cursor-pointer"
                 }`}
-                title="Connected to Supabase Cloud Database"
+                title={authUser ? "Connected to Supabase Cloud Database" : "Click to connect to Supabase Cloud"}
               >
                 <span
                   className={`w-1.5 h-1.5 rounded-full ${
@@ -683,19 +727,29 @@ export default function StandaloneApp() {
                   }`}
                 ></span>
                 Cloud
-              </span>
+              </button>
             </div>
+
+            {/* Theme Selector (System / Light / Dark) */}
+            <ThemeToggle />
 
             {/* User Session State */}
             {authUser ? (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1 sm:gap-2">
                 <div className="hidden sm:flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-800 border border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800/50">
                   <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                  <span className="max-w-[120px] truncate">{profile.name || authUser.email}</span>
+                  <span className="max-w-[100px] sm:max-w-[140px] truncate">{profile.name || authUser.email}</span>
+                </div>
+                {/* Mobile avatar */}
+                <div
+                  className="sm:hidden w-7 h-7 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 font-bold flex items-center justify-center text-xs shrink-0"
+                  title={profile.name || authUser.email || "User"}
+                >
+                  {(profile.name || authUser.email || "U").charAt(0).toUpperCase()}
                 </div>
                 <button
                   onClick={handleSignOut}
-                  className="px-3 py-1.5 rounded-full text-xs font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-white/10 transition-colors"
+                  className="px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-[11px] sm:text-xs font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-white/10 transition-colors cursor-pointer shrink-0"
                 >
                   Sign Out
                 </button>
@@ -708,10 +762,10 @@ export default function StandaloneApp() {
                   setAuthMessage(null);
                   setAuthModalOpen(true);
                 }}
-                className="px-4 py-1.5 rounded-full text-xs font-semibold bg-[#0071e3] hover:bg-[#0077ed] text-white shadow-sm transition-all hover:scale-105 active:scale-95 flex items-center gap-1.5"
+                className="px-2.5 sm:px-4 py-1.5 rounded-full text-xs font-semibold bg-[#0071e3] hover:bg-[#0077ed] text-white shadow-sm transition-all hover:scale-105 active:scale-95 flex items-center gap-1 sm:gap-1.5 shrink-0 cursor-pointer"
               >
                 <span>Sign In</span>
-                <span>→</span>
+                <span className="hidden xs:inline">→</span>
               </button>
             )}
           </div>
@@ -719,13 +773,13 @@ export default function StandaloneApp() {
       </header>
 
       {/* Main Content Area */}
-      <main className="flex-1 max-w-5xl w-full mx-auto px-6 py-8">
+      <main className="flex-1 max-w-5xl 2xl:max-w-6xl w-full mx-auto px-3.5 sm:px-6 lg:px-8 py-5 sm:py-8 lg:py-10 pb-24 sm:pb-12">
         {/* Highlighted Visitor Sign-In / Sign-Up Dialogue */}
         {!authUser && (
-          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-600/[0.09] via-indigo-600/[0.08] to-emerald-600/[0.09] dark:from-blue-500/10 dark:via-indigo-500/10 dark:to-emerald-500/10 border-2 border-[#0071e3]/30 dark:border-blue-400/30 p-5 sm:p-6 mb-8 shadow-sm backdrop-blur-md">
-            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
-              <div className="flex items-start gap-4">
-                <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-[#0071e3] to-[#34a853] text-white flex items-center justify-center text-xl shadow-md shrink-0">
+          <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-r from-blue-600/[0.09] via-indigo-600/[0.08] to-emerald-600/[0.09] dark:from-blue-500/10 dark:via-indigo-500/10 dark:to-emerald-500/10 border-2 border-[#0071e3]/30 dark:border-blue-400/30 p-4 sm:p-6 mb-6 sm:mb-8 shadow-sm backdrop-blur-md">
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 sm:gap-5">
+              <div className="flex items-start gap-3 sm:gap-4">
+                <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-gradient-to-tr from-[#0071e3] to-[#34a853] text-white flex items-center justify-center text-lg sm:text-xl shadow-md shrink-0">
                   ✨
                 </div>
                 <div>
@@ -743,7 +797,7 @@ export default function StandaloneApp() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-2.5 shrink-0 w-full md:w-auto">
+              <div className="flex items-center gap-2 sm:gap-2.5 shrink-0 w-full md:w-auto mt-2 md:mt-0">
                 <button
                   type="button"
                   onClick={() => {
@@ -752,7 +806,7 @@ export default function StandaloneApp() {
                     setAuthMessage(null);
                     setAuthModalOpen(true);
                   }}
-                  className="flex-1 md:flex-initial px-4 py-2.5 rounded-xl bg-white hover:bg-gray-50 text-gray-800 dark:bg-[#2c2c2e] dark:hover:bg-[#3a3a3c] dark:text-white text-xs font-semibold border border-gray-200 dark:border-white/10 shadow-sm transition-all hover:scale-105 active:scale-95 text-center cursor-pointer"
+                  className="flex-1 md:flex-initial px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-white hover:bg-gray-50 text-gray-800 dark:bg-[#2c2c2e] dark:hover:bg-[#3a3a3c] dark:text-white text-xs font-semibold border border-gray-200 dark:border-white/10 shadow-sm transition-all hover:scale-105 active:scale-95 text-center cursor-pointer"
                 >
                   Sign In
                 </button>
@@ -764,7 +818,7 @@ export default function StandaloneApp() {
                     setAuthMessage(null);
                     setAuthModalOpen(true);
                   }}
-                  className="flex-1 md:flex-initial px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#0071e3] to-[#005bb5] hover:from-[#0077ed] hover:to-[#0066cc] text-white text-xs font-semibold shadow-sm transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer"
+                  className="flex-1 md:flex-initial px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-gradient-to-r from-[#0071e3] to-[#005bb5] hover:from-[#0077ed] hover:to-[#0066cc] text-white text-xs font-semibold shadow-sm transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer"
                 >
                   <span>Sign Up</span>
                   <span>→</span>
@@ -778,47 +832,49 @@ export default function StandaloneApp() {
         {/* TAB 1: ADVISOR / EVALUATE PURCHASE */}
         {/* ========================================================================= */}
         {activeTab === "advisor" && (
-          <div className="space-y-8">
+          <div className="space-y-6 sm:space-y-8">
             {/* Hero Banner */}
-            <div className="text-center max-w-2xl mx-auto pt-2 pb-4">
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-[#e8f0fe] text-[#1a73e8] dark:bg-blue-950/50 dark:text-blue-300 dark:border dark:border-blue-800/40 mb-3">
+            <div className="text-center max-w-2xl 2xl:max-w-3xl mx-auto pt-1 sm:pt-2 pb-3 sm:pb-4">
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-[11px] sm:text-xs font-semibold bg-[#e8f0fe] text-[#1a73e8] dark:bg-blue-950/50 dark:text-blue-300 dark:border dark:border-blue-800/40 mb-2.5 sm:mb-3">
                 90-Day Liquidity Invariant Simulator
               </span>
-              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-[#1d1d1f] dark:text-white mb-2">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl 2xl:text-5xl font-bold tracking-tight text-[#1d1d1f] dark:text-white mb-2 sm:mb-2.5">
                 Should I buy it now, plan, or wait?
               </h2>
-              <p className="text-sm text-[#86868b] dark:text-gray-400 leading-relaxed">
+              <p className="text-xs sm:text-sm text-[#86868b] dark:text-gray-400 leading-relaxed px-2">
                 Enter any upcoming expense or purchase. Our engine verifies your recurring payroll, essential bills, and reserve buffer over the next 90 days with mathematical rigor.
               </p>
             </div>
 
             {/* Active Profile Bar */}
-            <div className="apple-card p-4 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-3 text-xs bg-white/90 dark:bg-[#1c1c1e]/90">
+            <div className="apple-card p-3.5 sm:p-4 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs bg-white/90 dark:bg-[#1c1c1e]/90">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-blue-50 text-[#0071e3] dark:bg-blue-950/60 dark:text-blue-400 font-bold flex items-center justify-center text-xs">
+                <div className="w-8 h-8 rounded-full bg-blue-50 text-[#0071e3] dark:bg-blue-950/60 dark:text-blue-400 font-bold flex items-center justify-center text-xs shrink-0">
                   {profile.name ? profile.name.charAt(0).toUpperCase() : "G"}
                 </div>
                 <div>
                   <span className="font-semibold text-gray-900 dark:text-white block">
                     Active Account: {profile.name || "Guest (Unsaved Profile)"}
                   </span>
-                  <span className="text-gray-500 dark:text-gray-400">
-                    Available: <strong className="text-gray-800 dark:text-gray-200">{getCurrencySymbol(profile.homeCurrency)}{(profile.currentBalance || 0).toLocaleString()} {profile.homeCurrency}</strong> | Reserve Buffer: <strong className="text-gray-800 dark:text-gray-200">{getCurrencySymbol(profile.homeCurrency)}{(profile.minimumBalance || 0).toLocaleString()} {profile.homeCurrency}</strong>
-                  </span>
+                  <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[11px] sm:text-xs text-gray-500 dark:text-gray-400">
+                    <span>Available: <strong className="text-gray-800 dark:text-gray-200">{getCurrencySymbol(profile.homeCurrency)}{(profile.currentBalance || 0).toLocaleString()} {profile.homeCurrency}</strong></span>
+                    <span className="hidden xs:inline text-gray-300 dark:text-gray-600">•</span>
+                    <span>Reserve Buffer: <strong className="text-gray-800 dark:text-gray-200">{getCurrencySymbol(profile.homeCurrency)}{(profile.minimumBalance || 0).toLocaleString()} {profile.homeCurrency}</strong></span>
+                  </div>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => setActiveTab("profile")}
-                className="text-xs font-semibold text-[#0071e3] dark:text-blue-400 hover:underline"
+                className="text-xs font-semibold text-[#0071e3] dark:text-blue-400 hover:underline self-start sm:self-auto shrink-0"
               >
                 Configure Profile & Bills →
               </button>
             </div>
 
             {/* Evaluation Form Card */}
-            <div className="apple-card rounded-3xl p-6 sm:p-8 shadow-sm">
-              <form onSubmit={handleAnalyze} className="space-y-6">
+            <div className="apple-card rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm">
+              <form onSubmit={handleAnalyze} className="space-y-5 sm:space-y-6">
                 {/* Question Input */}
                 <div>
                   <label className="block text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-2">
@@ -829,7 +885,7 @@ export default function StandaloneApp() {
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     placeholder={`e.g. Can I afford to buy a new laptop for ${getCurrencySymbol(currency)}${currency === "INR" ? "85,000" : "1,200"} today?`}
-                    className="w-full p-4 rounded-2xl bg-[#f5f5f7] dark:bg-[#151518] border border-gray-200 dark:border-white/10 text-[#1d1d1f] dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#0071e3]/30 focus:border-[#0071e3] transition-all resize-none font-normal placeholder:text-gray-400 dark:placeholder:text-gray-600"
+                    className="w-full p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-[#f5f5f7] dark:bg-[#151518] border border-gray-200 dark:border-white/10 text-[#1d1d1f] dark:text-white text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#0071e3]/30 focus:border-[#0071e3] transition-all resize-none font-normal placeholder:text-gray-400 dark:placeholder:text-gray-600"
                     required
                   />
 
@@ -841,7 +897,7 @@ export default function StandaloneApp() {
                         key={idx}
                         type="button"
                         onClick={() => handlePresetSelect(p)}
-                        className="interactive-pill text-[11px] px-3 py-1 rounded-full bg-white dark:bg-[#2c2c2e] hover:bg-blue-50 dark:hover:bg-blue-950/40 hover:border-[#0071e3]/40 dark:hover:border-blue-500/40 hover:text-[#0071e3] dark:hover:text-blue-300 border border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-300 font-medium shadow-sm hover:shadow active:scale-95 transition-all duration-200 cursor-pointer"
+                        className="interactive-pill text-[11px] px-2.5 sm:px-3 py-1 rounded-full bg-white dark:bg-[#2c2c2e] hover:bg-blue-50 dark:hover:bg-blue-950/40 hover:border-[#0071e3]/40 dark:hover:border-blue-500/40 hover:text-[#0071e3] dark:hover:text-blue-300 border border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-300 font-medium shadow-sm hover:shadow active:scale-95 transition-all duration-200 cursor-pointer"
                       >
                         {p.text.slice(0, 36)}...
                       </button>
@@ -850,7 +906,7 @@ export default function StandaloneApp() {
                 </div>
 
                 {/* Amount, Currency, Dates */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                   <div>
                     <label className="block text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
                       Amount
@@ -861,7 +917,7 @@ export default function StandaloneApp() {
                       min="1"
                       value={amount}
                       onChange={(e) => setAmount(Number(e.target.value))}
-                      className="w-full p-3 rounded-xl bg-[#f5f5f7] dark:bg-[#151518] border border-gray-200 dark:border-white/10 text-[#1d1d1f] dark:text-white text-xs font-medium focus:ring-2 focus:ring-[#0071e3]/30"
+                      className="w-full p-2.5 sm:p-3 rounded-xl bg-[#f5f5f7] dark:bg-[#151518] border border-gray-200 dark:border-white/10 text-[#1d1d1f] dark:text-white text-xs font-medium focus:ring-2 focus:ring-[#0071e3]/30"
                       required
                     />
                   </div>
@@ -880,7 +936,7 @@ export default function StandaloneApp() {
                           localStorage.setItem("user_configured_currency", val);
                         } catch {}
                       }}
-                      className="w-full p-3 rounded-xl bg-[#f5f5f7] dark:bg-[#151518] border border-gray-200 dark:border-white/10 text-[#1d1d1f] dark:text-white text-xs font-medium focus:ring-2 focus:ring-[#0071e3]/30"
+                      className="w-full p-2.5 sm:p-3 rounded-xl bg-[#f5f5f7] dark:bg-[#151518] border border-gray-200 dark:border-white/10 text-[#1d1d1f] dark:text-white text-xs font-medium focus:ring-2 focus:ring-[#0071e3]/30"
                     >
                       {SUPPORTED_CURRENCIES.map((c) => (
                         <option key={c.code} value={c.code}>
@@ -898,7 +954,7 @@ export default function StandaloneApp() {
                       type="date"
                       value={requestDate}
                       onChange={(e) => setRequestDate(e.target.value)}
-                      className="w-full p-3 rounded-xl bg-[#f5f5f7] dark:bg-[#151518] border border-gray-200 dark:border-white/10 text-[#1d1d1f] dark:text-white text-xs font-medium focus:ring-2 focus:ring-[#0071e3]/30"
+                      className="w-full p-2.5 sm:p-3 rounded-xl bg-[#f5f5f7] dark:bg-[#151518] border border-gray-200 dark:border-white/10 text-[#1d1d1f] dark:text-white text-xs font-medium focus:ring-2 focus:ring-[#0071e3]/30"
                       required
                     />
                   </div>
@@ -911,22 +967,22 @@ export default function StandaloneApp() {
                       type="date"
                       value={desiredDate}
                       onChange={(e) => setDesiredDate(e.target.value)}
-                      className="w-full p-3 rounded-xl bg-[#f5f5f7] dark:bg-[#151518] border border-gray-200 dark:border-white/10 text-[#1d1d1f] dark:text-white text-xs font-medium focus:ring-2 focus:ring-[#0071e3]/30"
+                      className="w-full p-2.5 sm:p-3 rounded-xl bg-[#f5f5f7] dark:bg-[#151518] border border-gray-200 dark:border-white/10 text-[#1d1d1f] dark:text-white text-xs font-medium focus:ring-2 focus:ring-[#0071e3]/30"
                     />
                   </div>
                 </div>
 
                 {/* Partial Payment Options & Document Attachment */}
-                <div className="p-4 rounded-2xl bg-[#f5f5f7]/60 dark:bg-[#151518]/60 border border-gray-200/80 dark:border-white/10 space-y-3">
-                  <div className="flex items-center space-x-3">
+                <div className="p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-[#f5f5f7]/60 dark:bg-[#151518]/60 border border-gray-200/80 dark:border-white/10 space-y-3">
+                  <div className="flex items-start sm:items-center space-x-3">
                     <input
                       type="checkbox"
                       id="partial-check"
                       checked={allowsPartial}
                       onChange={(e) => setAllowsPartial(e.target.checked)}
-                      className="h-4 w-4 rounded text-[#0071e3] focus:ring-[#0071e3] border-gray-300 dark:border-white/20 bg-white dark:bg-[#2c2c2e]"
+                      className="mt-0.5 sm:mt-0 h-4 w-4 rounded text-[#0071e3] focus:ring-[#0071e3] border-gray-300 dark:border-white/20 bg-white dark:bg-[#2c2c2e] shrink-0"
                     />
-                    <label htmlFor="partial-check" className="text-xs font-medium text-gray-700 dark:text-gray-300 cursor-pointer">
+                    <label htmlFor="partial-check" className="text-xs font-medium text-gray-700 dark:text-gray-300 cursor-pointer leading-snug">
                       I am open to financing, installments, or split payments (e.g. 3 to 6 months)
                     </label>
                   </div>
@@ -944,7 +1000,7 @@ export default function StandaloneApp() {
                       <label htmlFor="doc-upload" className="cursor-pointer block">
                         <span className="text-xs text-gray-600 dark:text-gray-400 font-medium">
                           {uploadedFileName ? (
-                            <span className="text-[#0071e3] dark:text-blue-400 font-semibold">📎 Attached: {uploadedFileName}</span>
+                            <span className="text-[#0071e3] dark:text-blue-400 font-semibold break-all">📎 Attached: {uploadedFileName}</span>
                           ) : (
                             <span>Click to upload receipt or bill (PNG, JPG, PDF)</span>
                           )}
@@ -983,11 +1039,11 @@ export default function StandaloneApp() {
                 </div>
 
                 {/* Submit Action */}
-                <div className="pt-4 flex items-center justify-end gap-3">
+                <div className="pt-3 sm:pt-4 flex items-center justify-end">
                   <button
                     type="submit"
                     disabled={loading}
-                    className="group px-8 py-3.5 rounded-2xl bg-gradient-to-r from-[#0071e3] via-[#0077ed] to-[#005bb5] hover:from-[#0077ed] hover:to-[#0066cc] text-white font-semibold text-xs shadow-md shadow-blue-500/20 hover:shadow-lg hover:shadow-blue-500/30 hover:-translate-y-0.5 active:scale-98 disabled:opacity-50 disabled:pointer-events-none transition-all duration-200 flex items-center gap-2 cursor-pointer"
+                    className="w-full sm:w-auto group px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-[#0071e3] via-[#0077ed] to-[#005bb5] hover:from-[#0077ed] hover:to-[#0066cc] text-white font-semibold text-xs shadow-md shadow-blue-500/20 hover:shadow-lg hover:shadow-blue-500/30 hover:-translate-y-0.5 active:scale-98 disabled:opacity-50 disabled:pointer-events-none transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer"
                   >
                     {loading ? (
                       <>
@@ -1019,12 +1075,12 @@ export default function StandaloneApp() {
             {/* Dynamic Results Presentation */}
             {/* ===================================================================== */}
             {result && (
-              <div className="apple-card rounded-3xl p-6 sm:p-8 shadow-sm space-y-6 animate-fadeInUp">
+              <div className="apple-card rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm space-y-5 sm:space-y-6 animate-fadeInUp">
                 {/* Result Header Badge */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-gray-100 dark:border-white/10">
-                  <div className="flex items-center space-x-3">
+                  <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
                     <span
-                      className={`inline-flex items-center px-3.5 py-1.5 rounded-full text-xs font-bold border transition-transform duration-200 hover:scale-105 cursor-default shadow-xs ${
+                      className={`inline-flex items-center px-3 sm:px-3.5 py-1 sm:py-1.5 rounded-full text-xs font-bold border transition-transform duration-200 hover:scale-105 cursor-default shadow-xs ${
                         getStatusBadge(result.decision.affordability_status).bg
                       }`}
                     >
@@ -1047,52 +1103,52 @@ export default function StandaloneApp() {
                     </span>
                   </div>
 
-                  <span className="text-[11px] text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 dark:text-emerald-300 px-2.5 py-1 rounded-full border border-emerald-200 dark:border-emerald-800/50 font-medium">
+                  <span className="self-start sm:self-auto text-[11px] text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 dark:text-emerald-300 px-2.5 py-1 rounded-full border border-emerald-200 dark:border-emerald-800/50 font-medium">
                     ✓ Saved to Decision History
                   </span>
                 </div>
 
                 {/* Key Metrics Row */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="hover-lift p-4 rounded-2xl bg-[#f5f5f7] dark:bg-[#151518] border border-transparent dark:border-white/10 hover:border-blue-300/40 dark:hover:border-blue-500/30 hover:shadow-sm transition-all cursor-default">
-                    <span className="text-[11px] uppercase tracking-wider text-gray-500 dark:text-gray-400 font-semibold block">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
+                  <div className="hover-lift p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-[#f5f5f7] dark:bg-[#151518] border border-transparent dark:border-white/10 hover:border-blue-300/40 dark:hover:border-blue-500/30 hover:shadow-sm transition-all cursor-default">
+                    <span className="text-[10px] sm:text-[11px] uppercase tracking-wider text-gray-500 dark:text-gray-400 font-semibold block">
                       Safe to Pay Today
                     </span>
-                    <span className="text-xl font-bold text-gray-900 dark:text-white mt-1 block">
+                    <span className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 dark:text-white mt-1 block truncate">
                       {getCurrencySymbol(result.profile.home_currency)}{Number(result.decision.amount_safe_to_pay).toLocaleString()} <span className="text-xs text-gray-400 dark:text-gray-500 font-medium">{result.profile.home_currency}</span>
                     </span>
                   </div>
 
-                  <div className="hover-lift p-4 rounded-2xl bg-[#f5f5f7] dark:bg-[#151518] border border-transparent dark:border-white/10 hover:border-blue-300/40 dark:hover:border-blue-500/30 hover:shadow-sm transition-all cursor-default">
-                    <span className="text-[11px] uppercase tracking-wider text-gray-500 dark:text-gray-400 font-semibold block">
+                  <div className="hover-lift p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-[#f5f5f7] dark:bg-[#151518] border border-transparent dark:border-white/10 hover:border-blue-300/40 dark:hover:border-blue-500/30 hover:shadow-sm transition-all cursor-default">
+                    <span className="text-[10px] sm:text-[11px] uppercase tracking-wider text-gray-500 dark:text-gray-400 font-semibold block">
                       Earliest Safe Full Date
                     </span>
-                    <span className="text-sm font-bold text-gray-900 dark:text-white mt-1 block">
+                    <span className="text-xs sm:text-sm font-bold text-gray-900 dark:text-white mt-1 block truncate">
                       {result.decision.earliest_date_for_full_payment || "Beyond 90 Days"}
                     </span>
                   </div>
 
-                  <div className="hover-lift p-4 rounded-2xl bg-[#f5f5f7] dark:bg-[#151518] border border-transparent dark:border-white/10 hover:border-blue-300/40 dark:hover:border-blue-500/30 hover:shadow-sm transition-all cursor-default">
-                    <span className="text-[11px] uppercase tracking-wider text-gray-500 dark:text-gray-400 font-semibold block">
+                  <div className="hover-lift p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-[#f5f5f7] dark:bg-[#151518] border border-transparent dark:border-white/10 hover:border-blue-300/40 dark:hover:border-blue-500/30 hover:shadow-sm transition-all cursor-default">
+                    <span className="text-[10px] sm:text-[11px] uppercase tracking-wider text-gray-500 dark:text-gray-400 font-semibold block">
                       Current Account
                     </span>
-                    <span className="text-sm font-bold text-gray-900 dark:text-white mt-1 block">
+                    <span className="text-xs sm:text-sm font-bold text-gray-900 dark:text-white mt-1 block truncate">
                       {getCurrencySymbol(result.profile.home_currency)}{result.profile.current_balance.toLocaleString()} <span className="text-xs text-gray-400 dark:text-gray-500 font-medium">{result.profile.home_currency}</span>
                     </span>
                   </div>
 
-                  <div className="hover-lift p-4 rounded-2xl bg-[#f5f5f7] dark:bg-[#151518] border border-transparent dark:border-white/10 hover:border-blue-300/40 dark:hover:border-blue-500/30 hover:shadow-sm transition-all cursor-default">
-                    <span className="text-[11px] uppercase tracking-wider text-gray-500 dark:text-gray-400 font-semibold block">
+                  <div className="hover-lift p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-[#f5f5f7] dark:bg-[#151518] border border-transparent dark:border-white/10 hover:border-blue-300/40 dark:hover:border-blue-500/30 hover:shadow-sm transition-all cursor-default">
+                    <span className="text-[10px] sm:text-[11px] uppercase tracking-wider text-gray-500 dark:text-gray-400 font-semibold block">
                       Reserve Shield
                     </span>
-                    <span className="text-sm font-bold text-gray-900 dark:text-white mt-1 block">
+                    <span className="text-xs sm:text-sm font-bold text-gray-900 dark:text-white mt-1 block truncate">
                       {getCurrencySymbol(result.profile.home_currency)}{result.profile.minimum_balance.toLocaleString()} <span className="text-xs text-gray-400 dark:text-gray-500 font-medium">{result.profile.home_currency}</span>
                     </span>
                   </div>
                 </div>
 
                 {/* Recommendation Plain English */}
-                <div className="hover-lift p-5 rounded-2xl bg-gradient-to-r from-blue-50/70 to-emerald-50/70 dark:from-blue-950/30 dark:to-emerald-950/30 border border-blue-100 dark:border-blue-800/40 text-gray-900 dark:text-gray-200 text-sm leading-relaxed font-medium shadow-xs">
+                <div className="hover-lift p-4 sm:p-5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-blue-50/70 to-emerald-50/70 dark:from-blue-950/30 dark:to-emerald-950/30 border border-blue-100 dark:border-blue-800/40 text-gray-900 dark:text-gray-200 text-xs sm:text-sm leading-relaxed font-medium shadow-xs">
                   {result.decision.decision_explanation}
                 </div>
 
@@ -1102,8 +1158,8 @@ export default function StandaloneApp() {
                     <h4 className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">
                       90-Day Balance Forward Trajectory Forecast
                     </h4>
-                    <div className="hover-lift bg-gray-50 dark:bg-[#151518] p-5 rounded-2xl border border-gray-100 dark:border-white/10 transition-all">
-                      <div className="relative h-44 w-full">
+                    <div className="hover-lift bg-gray-50 dark:bg-[#151518] p-3.5 sm:p-5 rounded-xl sm:rounded-2xl border border-gray-100 dark:border-white/10 transition-all">
+                      <div className="relative h-36 sm:h-44 md:h-48 w-full">
                         <svg className="w-full h-full overflow-visible" viewBox="0 0 500 150" preserveAspectRatio="none">
                           {(() => {
                             const balances = result.trajectory.map((t) => t.balance);
@@ -1140,14 +1196,14 @@ export default function StandaloneApp() {
                           })()}
                         </svg>
                       </div>
-                      <div className="flex justify-between items-center text-[11px] text-gray-400 dark:text-gray-500 mt-2 px-1">
+                      <div className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-1.5 sm:gap-2 text-[10px] sm:text-[11px] text-gray-400 dark:text-gray-500 mt-2 px-1">
                         <span>Day 0 ({requestDate})</span>
                         <span className="text-red-500 dark:text-red-400 font-semibold flex items-center">
-                          <span className="w-3 h-0.5 bg-red-500 inline-block mr-1"></span>
+                          <span className="w-2.5 h-0.5 bg-red-500 inline-block mr-1"></span>
                           Min Reserve: {getCurrencySymbol(result.profile.home_currency)}{result.profile.minimum_balance.toLocaleString()} ({result.profile.home_currency})
                         </span>
                         <span className="text-blue-600 dark:text-blue-400 font-semibold flex items-center">
-                          <span className="w-3 h-0.5 bg-blue-600 inline-block mr-1"></span>
+                          <span className="w-2.5 h-0.5 bg-blue-600 inline-block mr-1"></span>
                           Projected Balance
                         </span>
                         <span>Day 90</span>
@@ -1162,13 +1218,13 @@ export default function StandaloneApp() {
                     <h4 className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">
                       Recommended Payment Schedule
                     </h4>
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5 sm:gap-3">
                       {result.decision.payment_plan.split("|").map((entry, idx) => {
                         const [pDate, pAmt] = entry.split(":");
                         return (
-                          <div key={idx} className="hover-lift p-4 rounded-xl bg-gray-50 dark:bg-[#151518] border border-gray-100 dark:border-white/10 hover:border-blue-200 dark:hover:border-blue-900/50 text-xs transition-all cursor-default">
+                          <div key={idx} className="hover-lift p-3.5 sm:p-4 rounded-xl bg-gray-50 dark:bg-[#151518] border border-gray-100 dark:border-white/10 hover:border-blue-200 dark:hover:border-blue-900/50 text-xs transition-all cursor-default">
                             <span className="text-gray-400 dark:text-gray-500 block font-medium">Payment {idx + 1}</span>
-                            <span className="font-semibold text-gray-800 dark:text-gray-200 block text-sm mt-0.5">{pDate}</span>
+                            <span className="font-semibold text-gray-800 dark:text-gray-200 block text-xs sm:text-sm mt-0.5">{pDate}</span>
                             <span className="font-bold text-[#0071e3] dark:text-blue-400 mt-1 block">
                               {getCurrencySymbol(result.profile.home_currency)}{Number(pAmt).toLocaleString()} <span className="text-[10px] text-gray-400 dark:text-gray-500 font-normal">{result.profile.home_currency}</span>
                             </span>
@@ -1185,11 +1241,11 @@ export default function StandaloneApp() {
                     <h4 className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">
                       Identified Flexible Spending Changes Needed
                     </h4>
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-1.5 sm:gap-2">
                       {result.decision.spending_changes_needed.split("|").map((sc, idx) => (
                         <span
                           key={idx}
-                          className="interactive-pill px-3 py-1.5 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800/50 shadow-2xs cursor-default"
+                          className="interactive-pill px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-[11px] sm:text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800/50 shadow-2xs cursor-default"
                         >
                           {sc}
                         </span>
@@ -1209,14 +1265,14 @@ export default function StandaloneApp() {
           <div className="space-y-6">
             {/* Gate: require authentication for history */}
             {!authUser ? (
-              <div className="apple-card p-16 rounded-3xl text-center max-w-lg mx-auto">
-                <div className="w-16 h-16 rounded-3xl bg-gradient-to-br from-blue-50 to-sky-100 flex items-center justify-center mx-auto mb-5 text-2xl">
+              <div className="apple-card p-8 sm:p-12 md:p-16 rounded-2xl sm:rounded-3xl text-center max-w-lg mx-auto">
+                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-blue-50 to-sky-100 flex items-center justify-center mx-auto mb-4 sm:mb-5 text-xl sm:text-2xl">
                   🔒
                 </div>
-                <h3 className="text-lg font-bold text-[#1d1d1f] tracking-tight mb-2">
+                <h3 className="text-base sm:text-lg font-bold text-[#1d1d1f] dark:text-white tracking-tight mb-2">
                   Sign in to view your history
                 </h3>
-                <p className="text-xs text-[#86868b] leading-relaxed max-w-sm mx-auto mb-6">
+                <p className="text-xs text-[#86868b] dark:text-gray-400 leading-relaxed max-w-sm mx-auto mb-6">
                   Decision history is saved to your private cloud account. Sign in or create an account to start tracking your purchase evaluations.
                 </p>
                 <button
@@ -1226,7 +1282,7 @@ export default function StandaloneApp() {
                     setAuthMessage(null);
                     setAuthModalOpen(true);
                   }}
-                  className="px-6 py-3 rounded-2xl bg-gradient-to-r from-[#0071e3] to-[#005bb5] hover:from-[#0077ed] hover:to-[#0066cc] text-white font-semibold text-xs shadow-md transition-all active:scale-95 inline-flex items-center gap-2"
+                  className="w-full sm:w-auto px-6 py-3 rounded-2xl bg-gradient-to-r from-[#0071e3] to-[#005bb5] hover:from-[#0077ed] hover:to-[#0066cc] text-white font-semibold text-xs shadow-md transition-all active:scale-95 inline-flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <span>Sign In to Continue</span>
                   <span>→</span>
@@ -1235,9 +1291,9 @@ export default function StandaloneApp() {
             ) : (
             <>
             {/* Header & Stats Bar */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
               <div>
-                <h2 className="text-2xl font-bold tracking-tight text-[#1d1d1f] dark:text-white">
+                <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-[#1d1d1f] dark:text-white">
                   Decision History
                 </h2>
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
@@ -1248,7 +1304,7 @@ export default function StandaloneApp() {
               {history.length > 0 && (
                 <button
                   onClick={handleClearHistory}
-                  className="self-start sm:self-auto px-3 py-1.5 rounded-xl border border-gray-200 hover:border-rose-300 dark:border-white/10 dark:hover:border-rose-500 text-xs font-medium text-gray-600 hover:text-rose-600 dark:text-gray-400 dark:hover:text-rose-400 transition-colors"
+                  className="self-start sm:self-auto px-3 py-1.5 rounded-xl border border-gray-200 hover:border-rose-300 dark:border-white/10 dark:hover:border-rose-500 text-xs font-medium text-gray-600 hover:text-rose-600 dark:text-gray-400 dark:hover:text-rose-400 transition-colors cursor-pointer"
                 >
                   Clear History
                 </button>
@@ -1256,32 +1312,32 @@ export default function StandaloneApp() {
             </div>
 
             {/* Stats Overview Pill Cards */}
-            <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-              <div className="p-3 rounded-2xl bg-white dark:bg-[#1c1c1e] border border-gray-100 dark:border-white/10 shadow-sm text-center">
-                <span className="text-[11px] text-gray-400 dark:text-gray-500 font-medium block">Total Checks</span>
-                <span className="text-lg font-bold text-gray-800 dark:text-gray-100">{historyStats.total}</span>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 sm:gap-3">
+              <div className="col-span-2 sm:col-span-1 p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-white dark:bg-[#1c1c1e] border border-gray-100 dark:border-white/10 shadow-sm text-center">
+                <span className="text-[10px] sm:text-[11px] text-gray-400 dark:text-gray-500 font-medium block">Total Checks</span>
+                <span className="text-base sm:text-lg font-bold text-gray-800 dark:text-gray-100">{historyStats.total}</span>
               </div>
-              <div className="p-3 rounded-2xl bg-emerald-50/60 dark:bg-emerald-950/30 border border-emerald-100 dark:border-emerald-800/40 text-center">
-                <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-medium block">Affordable Now</span>
-                <span className="text-lg font-bold text-emerald-700 dark:text-emerald-300">{historyStats.affordableNow}</span>
+              <div className="p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-emerald-50/60 dark:bg-emerald-950/30 border border-emerald-100 dark:border-emerald-800/40 text-center">
+                <span className="text-[10px] sm:text-[11px] text-emerald-600 dark:text-emerald-400 font-medium block">Affordable Now</span>
+                <span className="text-base sm:text-lg font-bold text-emerald-700 dark:text-emerald-300">{historyStats.affordableNow}</span>
               </div>
-              <div className="p-3 rounded-2xl bg-blue-50/60 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-800/40 text-center">
-                <span className="text-[11px] text-blue-600 dark:text-blue-400 font-medium block">With Plan</span>
-                <span className="text-lg font-bold text-blue-700 dark:text-blue-300">{historyStats.withPlan}</span>
+              <div className="p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-blue-50/60 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-800/40 text-center">
+                <span className="text-[10px] sm:text-[11px] text-blue-600 dark:text-blue-400 font-medium block">With Plan</span>
+                <span className="text-base sm:text-lg font-bold text-blue-700 dark:text-blue-300">{historyStats.withPlan}</span>
               </div>
-              <div className="p-3 rounded-2xl bg-amber-50/60 dark:bg-amber-950/30 border border-amber-100 dark:border-amber-800/40 text-center">
-                <span className="text-[11px] text-amber-600 dark:text-amber-400 font-medium block">Wait (Later)</span>
-                <span className="text-lg font-bold text-amber-700 dark:text-amber-300">{historyStats.later}</span>
+              <div className="p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-amber-50/60 dark:bg-amber-950/30 border border-amber-100 dark:border-amber-800/40 text-center">
+                <span className="text-[10px] sm:text-[11px] text-amber-600 dark:text-amber-400 font-medium block">Wait (Later)</span>
+                <span className="text-base sm:text-lg font-bold text-amber-700 dark:text-amber-300">{historyStats.later}</span>
               </div>
-              <div className="p-3 rounded-2xl bg-rose-50/60 dark:bg-rose-950/30 border border-rose-100 dark:border-rose-800/40 text-center">
-                <span className="text-[11px] text-rose-600 dark:text-rose-400 font-medium block">Not Affordable</span>
-                <span className="text-lg font-bold text-rose-700 dark:text-rose-300">{historyStats.notAffordable}</span>
+              <div className="p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-rose-50/60 dark:bg-rose-950/30 border border-rose-100 dark:border-rose-800/40 text-center">
+                <span className="text-[10px] sm:text-[11px] text-rose-600 dark:text-rose-400 font-medium block">Not Affordable</span>
+                <span className="text-base sm:text-lg font-bold text-rose-700 dark:text-rose-300">{historyStats.notAffordable}</span>
               </div>
             </div>
 
             {/* Filter and Search Bar */}
-            <div className="flex flex-col sm:flex-row gap-3 items-center justify-between">
-              <div className="relative w-full sm:w-72">
+            <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
+              <div className="relative w-full sm:w-64 md:w-72">
                 <input
                   type="text"
                   value={historySearch}
@@ -1293,7 +1349,7 @@ export default function StandaloneApp() {
               </div>
 
               {/* Status Filter Chips */}
-              <div className="flex flex-wrap gap-1.5 self-start sm:self-auto">
+              <div className="flex flex-wrap gap-1.5 self-stretch sm:self-auto">
                 {[
                   { id: "all", label: "All" },
                   { id: "affordable_now", label: "Affordable Now" },
@@ -1304,7 +1360,7 @@ export default function StandaloneApp() {
                   <button
                     key={chip.id}
                     onClick={() => setHistoryStatusFilter(chip.id)}
-                    className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${
+                    className={`px-2.5 sm:px-3 py-1 rounded-full text-[11px] sm:text-xs font-medium transition-all cursor-pointer ${
                       historyStatusFilter === chip.id
                         ? "bg-gray-900 text-white dark:bg-white dark:text-gray-900 shadow-sm"
                         : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 dark:bg-[#1c1c1e] dark:text-gray-300 dark:border-white/10 dark:hover:bg-[#2c2c2e]"
@@ -1320,7 +1376,7 @@ export default function StandaloneApp() {
             {historyLoading ? (
               <div className="text-center py-12 text-xs text-gray-400 dark:text-gray-500">Loading history...</div>
             ) : filteredHistory.length === 0 ? (
-              <div className="apple-card p-12 rounded-3xl text-center">
+              <div className="apple-card p-8 sm:p-12 rounded-2xl sm:rounded-3xl text-center">
                 <div className="w-12 h-12 rounded-full bg-gray-100 dark:bg-[#2c2c2e] text-gray-400 dark:text-gray-500 flex items-center justify-center mx-auto mb-3 text-lg">
                   📋
                 </div>
@@ -1332,13 +1388,13 @@ export default function StandaloneApp() {
                 </p>
                 <button
                   onClick={() => setActiveTab("advisor")}
-                  className="mt-4 px-4 py-2 rounded-xl bg-[#0071e3] text-white text-xs font-semibold hover:bg-blue-600 transition-colors"
+                  className="mt-4 px-4 py-2 rounded-xl bg-[#0071e3] text-white text-xs font-semibold hover:bg-blue-600 transition-colors cursor-pointer"
                 >
                   Start an Evaluation
                 </button>
               </div>
             ) : (
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 {filteredHistory.map((item) => {
                   const isExpanded = expandedHistoryId === item.id;
                   const statusInfo = getStatusBadge(item.decision.affordability_status);
@@ -1347,10 +1403,10 @@ export default function StandaloneApp() {
                     <div
                       key={item.id}
                       onClick={() => setExpandedHistoryId(isExpanded ? null : item.id)}
-                      className="apple-card p-5 rounded-2xl cursor-pointer hover:border-gray-300 dark:hover:border-white/20 transition-all space-y-3"
+                      className="apple-card p-3.5 sm:p-5 rounded-xl sm:rounded-2xl cursor-pointer hover:border-gray-300 dark:hover:border-white/20 transition-all space-y-2.5 sm:space-y-3"
                     >
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                        <div className="flex items-center gap-2.5">
+                        <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
                           <span
                             className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold border ${statusInfo.bg}`}
                           >
@@ -1361,20 +1417,20 @@ export default function StandaloneApp() {
                             {getCurrencySymbol(item.currency)}{Number(item.amount).toLocaleString()} <span className="text-[10px] text-gray-400 dark:text-gray-500 font-normal">{item.currency}</span>
                           </span>
                           {item.uploadedReceiptName && (
-                            <span className="text-[10px] bg-gray-100 dark:bg-[#2c2c2e] text-gray-600 dark:text-gray-300 px-2 py-0.5 rounded-full">
+                            <span className="text-[10px] bg-gray-100 dark:bg-[#2c2c2e] text-gray-600 dark:text-gray-300 px-2 py-0.5 rounded-full max-w-[150px] sm:max-w-none truncate">
                               📎 {item.uploadedReceiptName}
                             </span>
                           )}
                         </div>
 
-                        <div className="flex items-center gap-2">
-                          <span className="text-[11px] text-gray-400 dark:text-gray-500">
+                        <div className="flex items-center justify-between sm:justify-end gap-2 pt-1 sm:pt-0 border-t sm:border-t-0 border-gray-100 dark:border-white/5">
+                          <span className="text-[10px] sm:text-[11px] text-gray-400 dark:text-gray-500">
                             {new Date(item.createdAt).toLocaleDateString()} at{" "}
                             {new Date(item.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                           </span>
                           <button
                             onClick={(e) => handleDeleteHistoryItem(item.id, e)}
-                            className="p-1 rounded-lg text-gray-300 dark:text-gray-600 hover:text-rose-600 dark:hover:text-rose-400 transition-colors"
+                            className="p-1 rounded-lg text-gray-300 dark:text-gray-600 hover:text-rose-600 dark:hover:text-rose-400 transition-colors cursor-pointer"
                             title="Delete this record"
                           >
                             ✕
@@ -1383,7 +1439,7 @@ export default function StandaloneApp() {
                       </div>
 
                       {/* Query Text */}
-                      <p className="text-xs font-semibold text-gray-900 dark:text-white">
+                      <p className="text-xs sm:text-sm font-semibold text-gray-900 dark:text-white">
                         {item.query}
                       </p>
 
@@ -1394,29 +1450,29 @@ export default function StandaloneApp() {
 
                       {/* Expanded View */}
                       {isExpanded && (
-                        <div className="pt-4 border-t border-gray-100 dark:border-white/10 space-y-4 mt-2" onClick={(e) => e.stopPropagation()}>
-                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-                            <div className="p-3 rounded-xl bg-gray-50 dark:bg-[#151518] border border-transparent dark:border-white/10">
+                        <div className="pt-3 sm:pt-4 border-t border-gray-100 dark:border-white/10 space-y-3 sm:space-y-4 mt-2" onClick={(e) => e.stopPropagation()}>
+                          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 text-xs">
+                            <div className="p-2.5 sm:p-3 rounded-xl bg-gray-50 dark:bg-[#151518] border border-transparent dark:border-white/10">
                               <span className="text-gray-400 dark:text-gray-500 block text-[10px] uppercase font-bold">Safe Today</span>
-                              <span className="font-bold text-gray-800 dark:text-gray-200 text-sm">
+                              <span className="font-bold text-gray-800 dark:text-gray-200 text-xs sm:text-sm truncate block">
                                 {getCurrencySymbol(item.currency)}{Number(item.decision.amount_safe_to_pay).toLocaleString()} <span className="text-[10px] text-gray-400 dark:text-gray-500 font-normal">{item.currency}</span>
                               </span>
                             </div>
-                            <div className="p-3 rounded-xl bg-gray-50 dark:bg-[#151518] border border-transparent dark:border-white/10">
+                            <div className="p-2.5 sm:p-3 rounded-xl bg-gray-50 dark:bg-[#151518] border border-transparent dark:border-white/10">
                               <span className="text-gray-400 dark:text-gray-500 block text-[10px] uppercase font-bold">Method</span>
-                              <span className="font-bold text-gray-800 dark:text-gray-200 text-sm uppercase">
+                              <span className="font-bold text-gray-800 dark:text-gray-200 text-xs sm:text-sm uppercase truncate block">
                                 {item.decision.recommended_payment_method.replace("_", " ")}
                               </span>
                             </div>
-                            <div className="p-3 rounded-xl bg-gray-50 dark:bg-[#151518] border border-transparent dark:border-white/10">
+                            <div className="p-2.5 sm:p-3 rounded-xl bg-gray-50 dark:bg-[#151518] border border-transparent dark:border-white/10">
                               <span className="text-gray-400 dark:text-gray-500 block text-[10px] uppercase font-bold">Full Date</span>
-                              <span className="font-bold text-gray-800 dark:text-gray-200 text-sm">
+                              <span className="font-bold text-gray-800 dark:text-gray-200 text-xs sm:text-sm truncate block">
                                 {item.decision.earliest_date_for_full_payment || "N/A"}
                               </span>
                             </div>
-                            <div className="p-3 rounded-xl bg-gray-50 dark:bg-[#151518] border border-transparent dark:border-white/10">
+                            <div className="p-2.5 sm:p-3 rounded-xl bg-gray-50 dark:bg-[#151518] border border-transparent dark:border-white/10">
                               <span className="text-gray-400 dark:text-gray-500 block text-[10px] uppercase font-bold">Account Buffer</span>
-                              <span className="font-bold text-gray-800 dark:text-gray-200 text-sm">
+                              <span className="font-bold text-gray-800 dark:text-gray-200 text-xs sm:text-sm truncate block">
                                 {getCurrencySymbol(item.currency)}{item.profileSnapshot.minimumBalance.toLocaleString()} <span className="text-[10px] text-gray-400 dark:text-gray-500 font-normal">{item.currency}</span>
                               </span>
                             </div>
@@ -1425,16 +1481,16 @@ export default function StandaloneApp() {
                           {/* Payment Plan if present */}
                           {item.decision.payment_plan && item.decision.payment_plan !== "none" && (
                             <div className="space-y-1.5">
-                              <span className="text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block">
+                              <span className="text-[10px] sm:text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block">
                                 Payment Schedule
                               </span>
-                              <div className="flex flex-wrap gap-2">
+                              <div className="flex flex-wrap gap-1.5 sm:gap-2">
                                 {item.decision.payment_plan.split("|").map((p, idx) => {
                                   const [pDate, pAmt] = p.split(":");
                                   return (
                                     <span
                                       key={idx}
-                                      className="px-3 py-1 rounded-xl bg-blue-50 text-blue-800 border border-blue-100 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-800/50 text-xs font-medium"
+                                      className="px-2.5 sm:px-3 py-1 rounded-xl bg-blue-50 text-blue-800 border border-blue-100 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-800/50 text-xs font-medium"
                                     >
                                       Payment {idx + 1}: {pDate} → {getCurrencySymbol(item.currency)}{Number(pAmt).toLocaleString()} <span className="text-[10px] opacity-75 font-normal">{item.currency}</span>
                                     </span>
@@ -1447,10 +1503,10 @@ export default function StandaloneApp() {
                           {/* Spending Changes if present */}
                           {item.decision.spending_changes_needed && item.decision.spending_changes_needed !== "none" && (
                             <div className="space-y-1.5">
-                              <span className="text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block">
+                              <span className="text-[10px] sm:text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block">
                                 Spending Changes Required
                               </span>
-                              <div className="flex flex-wrap gap-2">
+                              <div className="flex flex-wrap gap-1.5 sm:gap-2">
                                 {item.decision.spending_changes_needed.split("|").map((sc, idx) => (
                                   <span
                                     key={idx}
@@ -1478,28 +1534,44 @@ export default function StandaloneApp() {
         {/* TAB 3: FINANCIAL PROFILE */}
         {/* ========================================================================= */}
         {activeTab === "profile" && (
-          <div className="max-w-3xl mx-auto space-y-6">
-            <div className="flex items-center justify-between">
+          <div className="max-w-3xl 2xl:max-w-4xl mx-auto space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
-                <h2 className="text-2xl font-bold tracking-tight text-[#1d1d1f] dark:text-white">
-                  Financial Profile & Safeguards
-                </h2>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-[#1d1d1f] dark:text-white">
+                    Financial Profile & Safeguards
+                  </h2>
+                  <span
+                    className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold ${
+                      authUser
+                        ? "bg-sky-50 text-sky-800 border border-sky-200 dark:bg-sky-950/40 dark:text-sky-300 dark:border-sky-800/50"
+                        : "bg-amber-50 text-amber-800 border border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800/50"
+                    }`}
+                  >
+                    <span
+                      className={`w-1.5 h-1.5 rounded-full ${
+                        authUser ? "bg-sky-500 animate-pulse" : "bg-amber-500"
+                      }`}
+                    ></span>
+                    {authUser ? "Cloud Mode (Supabase)" : "Local Mode (On Device)"}
+                  </span>
+                </div>
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
                   Update your balances, confirmed income, and priority spending categories.
                 </p>
               </div>
 
               {profileSaveSuccess && (
-                <span className="px-3 py-1.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800/50 animate-fade-in">
+                <span className="self-start sm:self-auto px-3 py-1.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800/50 animate-fade-in">
                   ✓ Profile Saved Live
                 </span>
               )}
             </div>
 
-            <div className="apple-card rounded-3xl p-6 sm:p-8 shadow-sm">
-              <form onSubmit={handleSaveProfile} className="space-y-6">
+            <div className="apple-card rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm">
+              <form onSubmit={handleSaveProfile} className="space-y-5 sm:space-y-6">
                 {/* Core Account Details */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <div>
                     <label className="block text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
                       Account Owner Name
@@ -1508,7 +1580,7 @@ export default function StandaloneApp() {
                       type="text"
                       value={profile.name}
                       onChange={(e) => setProfile({ ...profile, name: e.target.value })}
-                      className="w-full p-3 rounded-xl bg-[#f5f5f7] dark:bg-[#151518] border border-gray-200 dark:border-white/10 text-[#1d1d1f] dark:text-white text-xs font-medium focus:ring-2 focus:ring-[#0071e3]/30"
+                      className="w-full p-2.5 sm:p-3 rounded-xl bg-[#f5f5f7] dark:bg-[#151518] border border-gray-200 dark:border-white/10 text-[#1d1d1f] dark:text-white text-xs font-medium focus:ring-2 focus:ring-[#0071e3]/30"
                       required
                     />
                   </div>
@@ -1527,7 +1599,7 @@ export default function StandaloneApp() {
                           localStorage.setItem("user_configured_currency", val);
                         } catch {}
                       }}
-                      className="w-full p-3 rounded-xl bg-[#f5f5f7] dark:bg-[#151518] border border-gray-200 dark:border-white/10 text-[#1d1d1f] dark:text-white text-xs font-medium focus:ring-2 focus:ring-[#0071e3]/30"
+                      className="w-full p-2.5 sm:p-3 rounded-xl bg-[#f5f5f7] dark:bg-[#151518] border border-gray-200 dark:border-white/10 text-[#1d1d1f] dark:text-white text-xs font-medium focus:ring-2 focus:ring-[#0071e3]/30"
                     >
                       {SUPPORTED_CURRENCIES.map((c) => (
                         <option key={c.code} value={c.code}>
@@ -1546,7 +1618,7 @@ export default function StandaloneApp() {
                       step="any"
                       value={profile.currentBalance}
                       onChange={(e) => setProfile({ ...profile, currentBalance: Number(e.target.value) })}
-                      className="w-full p-3 rounded-xl bg-[#f5f5f7] dark:bg-[#151518] border border-gray-200 dark:border-white/10 text-[#1d1d1f] dark:text-white text-xs font-medium focus:ring-2 focus:ring-[#0071e3]/30"
+                      className="w-full p-2.5 sm:p-3 rounded-xl bg-[#f5f5f7] dark:bg-[#151518] border border-gray-200 dark:border-white/10 text-[#1d1d1f] dark:text-white text-xs font-medium focus:ring-2 focus:ring-[#0071e3]/30"
                       required
                     />
                   </div>
@@ -1560,7 +1632,7 @@ export default function StandaloneApp() {
                       step="any"
                       value={profile.minimumBalance}
                       onChange={(e) => setProfile({ ...profile, minimumBalance: Number(e.target.value) })}
-                      className="w-full p-3 rounded-xl bg-[#f5f5f7] dark:bg-[#151518] border border-gray-200 dark:border-white/10 text-[#1d1d1f] dark:text-white text-xs font-medium focus:ring-2 focus:ring-[#0071e3]/30"
+                      className="w-full p-2.5 sm:p-3 rounded-xl bg-[#f5f5f7] dark:bg-[#151518] border border-gray-200 dark:border-white/10 text-[#1d1d1f] dark:text-white text-xs font-medium focus:ring-2 focus:ring-[#0071e3]/30"
                       required
                     />
                     <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-1">
@@ -1575,7 +1647,7 @@ export default function StandaloneApp() {
                     Payroll & Monthly Fixed Commitments
                   </h4>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                     <div>
                       <label className="block text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
                         Net Monthly Salary
@@ -1585,7 +1657,7 @@ export default function StandaloneApp() {
                         step="any"
                         value={profile.monthlySalary}
                         onChange={(e) => setProfile({ ...profile, monthlySalary: Number(e.target.value) })}
-                        className="w-full p-3 rounded-xl bg-[#f5f5f7] dark:bg-[#151518] border border-gray-200 dark:border-white/10 text-[#1d1d1f] dark:text-white text-xs font-medium focus:ring-2 focus:ring-[#0071e3]/30"
+                        className="w-full p-2.5 sm:p-3 rounded-xl bg-[#f5f5f7] dark:bg-[#151518] border border-gray-200 dark:border-white/10 text-[#1d1d1f] dark:text-white text-xs font-medium focus:ring-2 focus:ring-[#0071e3]/30"
                         required
                       />
                     </div>
@@ -1600,7 +1672,7 @@ export default function StandaloneApp() {
                         max="31"
                         value={profile.payday}
                         onChange={(e) => setProfile({ ...profile, payday: Number(e.target.value) })}
-                        className="w-full p-3 rounded-xl bg-[#f5f5f7] dark:bg-[#151518] border border-gray-200 dark:border-white/10 text-[#1d1d1f] dark:text-white text-xs font-medium focus:ring-2 focus:ring-[#0071e3]/30"
+                        className="w-full p-2.5 sm:p-3 rounded-xl bg-[#f5f5f7] dark:bg-[#151518] border border-gray-200 dark:border-white/10 text-[#1d1d1f] dark:text-white text-xs font-medium focus:ring-2 focus:ring-[#0071e3]/30"
                         required
                       />
                     </div>
@@ -1614,7 +1686,7 @@ export default function StandaloneApp() {
                         step="any"
                         value={profile.monthlyFixedExpenses}
                         onChange={(e) => setProfile({ ...profile, monthlyFixedExpenses: Number(e.target.value) })}
-                        className="w-full p-3 rounded-xl bg-[#f5f5f7] dark:bg-[#151518] border border-gray-200 dark:border-white/10 text-[#1d1d1f] dark:text-white text-xs font-medium focus:ring-2 focus:ring-[#0071e3]/30"
+                        className="w-full p-2.5 sm:p-3 rounded-xl bg-[#f5f5f7] dark:bg-[#151518] border border-gray-200 dark:border-white/10 text-[#1d1d1f] dark:text-white text-xs font-medium focus:ring-2 focus:ring-[#0071e3]/30"
                         required
                       />
                     </div>
@@ -1638,7 +1710,7 @@ export default function StandaloneApp() {
                           key={c}
                           type="button"
                           onClick={() => toggleArrayItem("expenseCategoriesToProtect", c)}
-                          className={`px-3 py-1 rounded-full text-xs font-medium capitalize transition-all ${
+                          className={`px-2.5 sm:px-3 py-1 rounded-full text-[11px] sm:text-xs font-medium capitalize transition-all cursor-pointer ${
                             profile.expenseCategoriesToProtect.includes(c)
                               ? "bg-emerald-100 text-emerald-800 border border-emerald-300 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800/50 shadow-sm"
                               : "bg-gray-100 text-gray-600 border border-gray-200 dark:bg-[#1c1c1e] dark:text-gray-400 dark:border-white/10"
@@ -1662,7 +1734,7 @@ export default function StandaloneApp() {
                           key={c}
                           type="button"
                           onClick={() => toggleArrayItem("expenseCategoriesWillingToReduce", c)}
-                          className={`px-3 py-1 rounded-full text-xs font-medium capitalize transition-all ${
+                          className={`px-2.5 sm:px-3 py-1 rounded-full text-[11px] sm:text-xs font-medium capitalize transition-all cursor-pointer ${
                             profile.expenseCategoriesWillingToReduce.includes(c)
                               ? "bg-blue-100 text-blue-800 border border-blue-300 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-800/50 shadow-sm"
                               : "bg-gray-100 text-gray-600 border border-gray-200 dark:bg-[#1c1c1e] dark:text-gray-400 dark:border-white/10"
@@ -1686,7 +1758,7 @@ export default function StandaloneApp() {
                           key={c}
                           type="button"
                           onClick={() => toggleArrayItem("expenseCategoriesWillingToStop", c)}
-                          className={`px-3 py-1 rounded-full text-xs font-medium capitalize transition-all ${
+                          className={`px-2.5 sm:px-3 py-1 rounded-full text-[11px] sm:text-xs font-medium capitalize transition-all cursor-pointer ${
                             profile.expenseCategoriesWillingToStop.includes(c)
                               ? "bg-amber-100 text-amber-800 border border-amber-300 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800/50 shadow-sm"
                               : "bg-gray-100 text-gray-600 border border-gray-200 dark:bg-[#1c1c1e] dark:text-gray-400 dark:border-white/10"
@@ -1706,12 +1778,12 @@ export default function StandaloneApp() {
                     Financing & Payment Methods
                   </h4>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
                     <div>
                       <span className="text-xs font-semibold text-gray-700 dark:text-gray-300 block mb-2">
                         Accepted Methods:
                       </span>
-                      <div className="flex flex-wrap gap-3">
+                      <div className="flex flex-wrap gap-2.5 sm:gap-3">
                         {[
                           { id: "full_payment", label: "Full Payment" },
                           { id: "installments", label: "Installments" },
@@ -1742,18 +1814,18 @@ export default function StandaloneApp() {
                         onChange={(e) =>
                           setProfile({ ...profile, maxInstallmentMonths: Number(e.target.value) })
                         }
-                        className="w-full accent-[#0071e3]"
+                        className="w-full accent-[#0071e3] cursor-pointer"
                       />
                     </div>
                   </div>
                 </div>
 
                 {/* Save Button & Guest reminder */}
-                <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+                <div className="pt-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
                   {!authUser ? (
-                    <div className="text-xs text-amber-700 bg-amber-50 border border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800/50 px-3.5 py-2 rounded-xl flex items-center gap-2">
-                      <span>💡</span>
-                      <span>
+                    <div className="text-xs text-amber-700 bg-amber-50 border border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800/50 px-3.5 py-2.5 rounded-xl flex items-start sm:items-center gap-2">
+                      <span className="shrink-0">💡</span>
+                      <span className="leading-snug">
                         Changes apply to current session only.{" "}
                         <button
                           type="button"
@@ -1777,7 +1849,7 @@ export default function StandaloneApp() {
                   <button
                     type="submit"
                     disabled={profileSaving}
-                    className="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-gray-900 hover:bg-black text-white dark:bg-white dark:hover:bg-gray-100 dark:text-gray-900 font-semibold text-xs shadow-sm transition-all disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
+                    className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl sm:rounded-2xl bg-gray-900 hover:bg-black text-white dark:bg-white dark:hover:bg-gray-100 dark:text-gray-900 font-semibold text-xs shadow-sm transition-all disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
                   >
                     {profileSaving ? (
                       <span>Saving to Storage...</span>
@@ -1796,29 +1868,29 @@ export default function StandaloneApp() {
 
         {/* SEO Semantic Content & FAQ Section */}
         <section
-          className="mt-20 pt-16 border-t border-gray-200/60 dark:border-white/10 space-y-16"
+          className="mt-16 sm:mt-20 pt-12 sm:pt-16 border-t border-gray-200/60 dark:border-white/10 space-y-12 sm:space-y-16"
           aria-label="Purchase Affordability Guide & Methodology"
         >
           {/* Section 1: Core Methodology */}
           <div>
-            <div className="text-center max-w-2xl mx-auto mb-10">
-              <span className="px-3 py-1 rounded-full text-[11px] font-semibold tracking-wide uppercase bg-blue-50 text-[#0071e3] dark:bg-blue-950/40 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/40 inline-block mb-3">
+            <div className="text-center max-w-2xl 2xl:max-w-3xl mx-auto mb-8 sm:mb-10">
+              <span className="px-3 py-1 rounded-full text-[11px] font-semibold tracking-wide uppercase bg-blue-50 text-[#0071e3] dark:bg-blue-950/40 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/40 inline-block mb-2.5 sm:mb-3">
                 Forward Cash Flow Modeling
               </span>
               <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#1d1d1f] dark:text-white">
                 How &ldquo;Should I Buy It?&rdquo; Works
               </h2>
-              <p className="mt-3 text-sm text-[#86868b] dark:text-[#a1a1a6] leading-relaxed">
+              <p className="mt-2.5 sm:mt-3 text-xs sm:text-sm text-[#86868b] dark:text-[#a1a1a6] leading-relaxed px-2">
                 Most impulse buys happen because people look at their current bank balance instead of their upcoming cash commitments. Our simulation engine projects every dollar across the next 90 days before you spend.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-              <div className="hover-lift p-6 rounded-3xl bg-white dark:bg-[#1c1c1e] border border-black/[0.06] dark:border-white/10 shadow-sm hover:border-[#0071e3]/40 dark:hover:border-blue-500/40 hover:shadow-lg transition-all duration-300 group cursor-default">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
+              <div className="hover-lift p-5 sm:p-6 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#1c1c1e] border border-black/[0.06] dark:border-white/10 shadow-sm hover:border-[#0071e3]/40 dark:hover:border-blue-500/40 hover:shadow-lg transition-all duration-300 group cursor-default">
                 <div className="w-10 h-10 rounded-2xl bg-blue-50 dark:bg-blue-950/50 text-[#0071e3] dark:text-blue-400 flex items-center justify-center font-bold text-lg mb-4 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
                   01
                 </div>
-                <h3 className="text-base font-semibold text-[#1d1d1f] dark:text-white mb-2 group-hover:text-[#0071e3] dark:group-hover:text-blue-400 transition-colors">
+                <h3 className="text-sm sm:text-base font-semibold text-[#1d1d1f] dark:text-white mb-2 group-hover:text-[#0071e3] dark:group-hover:text-blue-400 transition-colors">
                   90-Day Liquidity Curve
                 </h3>
                 <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] leading-relaxed">
@@ -1826,11 +1898,11 @@ export default function StandaloneApp() {
                 </p>
               </div>
 
-              <div className="hover-lift p-6 rounded-3xl bg-white dark:bg-[#1c1c1e] border border-black/[0.06] dark:border-white/10 shadow-sm hover:border-emerald-500/40 dark:hover:border-emerald-500/40 hover:shadow-lg transition-all duration-300 group cursor-default">
+              <div className="hover-lift p-5 sm:p-6 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#1c1c1e] border border-black/[0.06] dark:border-white/10 shadow-sm hover:border-emerald-500/40 dark:hover:border-emerald-500/40 hover:shadow-lg transition-all duration-300 group cursor-default">
                 <div className="w-10 h-10 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-lg mb-4 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
                   02
                 </div>
-                <h3 className="text-base font-semibold text-[#1d1d1f] dark:text-white mb-2 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+                <h3 className="text-sm sm:text-base font-semibold text-[#1d1d1f] dark:text-white mb-2 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
                   Emergency Buffer Defense
                 </h3>
                 <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] leading-relaxed">
@@ -1838,11 +1910,11 @@ export default function StandaloneApp() {
                 </p>
               </div>
 
-              <div className="hover-lift p-6 rounded-3xl bg-white dark:bg-[#1c1c1e] border border-black/[0.06] dark:border-white/10 shadow-sm hover:border-indigo-500/40 dark:hover:border-indigo-500/40 hover:shadow-lg transition-all duration-300 group cursor-default">
+              <div className="hover-lift p-5 sm:p-6 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#1c1c1e] border border-black/[0.06] dark:border-white/10 shadow-sm hover:border-indigo-500/40 dark:hover:border-indigo-500/40 hover:shadow-lg transition-all duration-300 group cursor-default">
                 <div className="w-10 h-10 rounded-2xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-lg mb-4 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
                   03
                 </div>
-                <h3 className="text-base font-semibold text-[#1d1d1f] dark:text-white mb-2 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                <h3 className="text-sm sm:text-base font-semibold text-[#1d1d1f] dark:text-white mb-2 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
                   Trough Risk Detection
                 </h3>
                 <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] leading-relaxed">
@@ -1854,26 +1926,26 @@ export default function StandaloneApp() {
 
           {/* Section 2: 4 Decision Verdicts */}
           <div>
-            <div className="text-center max-w-2xl mx-auto mb-10">
-              <span className="px-3 py-1 rounded-full text-[11px] font-semibold tracking-wide uppercase bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-800/40 inline-block mb-3">
+            <div className="text-center max-w-2xl 2xl:max-w-3xl mx-auto mb-8 sm:mb-10">
+              <span className="px-3 py-1 rounded-full text-[11px] font-semibold tracking-wide uppercase bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-800/40 inline-block mb-2.5 sm:mb-3">
                 Objective Decision Engine
               </span>
               <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#1d1d1f] dark:text-white">
                 The 4 Decision Outcomes Demystified
               </h2>
-              <p className="mt-3 text-sm text-[#86868b] dark:text-[#a1a1a6] leading-relaxed">
+              <p className="mt-2.5 sm:mt-3 text-xs sm:text-sm text-[#86868b] dark:text-[#a1a1a6] leading-relaxed px-2">
                 Rather than giving vague financial advice, &ldquo;Should I Buy It?&rdquo; generates one of four mathematically verifiable recommendations tailored to your cash position.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              <div className="hover-lift p-6 rounded-3xl bg-white dark:bg-[#1c1c1e] border border-black/[0.06] dark:border-white/10 shadow-sm hover:border-emerald-500/50 dark:hover:border-emerald-500/40 hover:shadow-md flex flex-col justify-between transition-all duration-300 cursor-default">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+              <div className="hover-lift p-5 sm:p-6 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#1c1c1e] border border-black/[0.06] dark:border-white/10 shadow-sm hover:border-emerald-500/50 dark:hover:border-emerald-500/40 hover:shadow-md flex flex-col justify-between transition-all duration-300 cursor-default">
                 <div>
                   <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800/50 mb-3">
                     <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
                     BUY NOW
                   </div>
-                  <h3 className="text-base font-bold text-[#1d1d1f] dark:text-white mb-1.5">
+                  <h3 className="text-sm sm:text-base font-bold text-[#1d1d1f] dark:text-white mb-1.5">
                     Safe to Purchase Immediately
                   </h3>
                   <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] leading-relaxed">
@@ -1882,13 +1954,13 @@ export default function StandaloneApp() {
                 </div>
               </div>
 
-              <div className="hover-lift p-6 rounded-3xl bg-white dark:bg-[#1c1c1e] border border-black/[0.06] dark:border-white/10 shadow-sm hover:border-blue-500/50 dark:hover:border-blue-500/40 hover:shadow-md flex flex-col justify-between transition-all duration-300 cursor-default">
+              <div className="hover-lift p-5 sm:p-6 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#1c1c1e] border border-black/[0.06] dark:border-white/10 shadow-sm hover:border-blue-500/50 dark:hover:border-blue-500/40 hover:shadow-md flex flex-col justify-between transition-all duration-300 cursor-default">
                 <div>
                   <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-800/50 mb-3">
                     <span className="w-2 h-2 rounded-full bg-blue-500"></span>
                     SAFE DELAY (WAIT)
                   </div>
-                  <h3 className="text-base font-bold text-[#1d1d1f] dark:text-white mb-1.5">
+                  <h3 className="text-sm sm:text-base font-bold text-[#1d1d1f] dark:text-white mb-1.5">
                     Affordable with Strategic Timing
                   </h3>
                   <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] leading-relaxed">
@@ -1897,13 +1969,13 @@ export default function StandaloneApp() {
                 </div>
               </div>
 
-              <div className="hover-lift p-6 rounded-3xl bg-white dark:bg-[#1c1c1e] border border-black/[0.06] dark:border-white/10 shadow-sm hover:border-amber-500/50 dark:hover:border-amber-500/40 hover:shadow-md flex flex-col justify-between transition-all duration-300 cursor-default">
+              <div className="hover-lift p-5 sm:p-6 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#1c1c1e] border border-black/[0.06] dark:border-white/10 shadow-sm hover:border-amber-500/50 dark:hover:border-amber-500/40 hover:shadow-md flex flex-col justify-between transition-all duration-300 cursor-default">
                 <div>
                   <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800/50 mb-3">
                     <span className="w-2 h-2 rounded-full bg-amber-500"></span>
                     HIGH RISK
                   </div>
-                  <h3 className="text-base font-bold text-[#1d1d1f] dark:text-white mb-1.5">
+                  <h3 className="text-sm sm:text-base font-bold text-[#1d1d1f] dark:text-white mb-1.5">
                     Tight Margin of Error
                   </h3>
                   <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] leading-relaxed">
@@ -1912,13 +1984,13 @@ export default function StandaloneApp() {
                 </div>
               </div>
 
-              <div className="hover-lift p-6 rounded-3xl bg-white dark:bg-[#1c1c1e] border border-black/[0.06] dark:border-white/10 shadow-sm hover:border-rose-500/50 dark:hover:border-rose-500/40 hover:shadow-md flex flex-col justify-between transition-all duration-300 cursor-default">
+              <div className="hover-lift p-5 sm:p-6 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#1c1c1e] border border-black/[0.06] dark:border-white/10 shadow-sm hover:border-rose-500/50 dark:hover:border-rose-500/40 hover:shadow-md flex flex-col justify-between transition-all duration-300 cursor-default">
                 <div>
                   <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800/50 mb-3">
                     <span className="w-2 h-2 rounded-full bg-rose-500"></span>
                     DECLINE
                   </div>
-                  <h3 className="text-base font-bold text-[#1d1d1f] dark:text-white mb-1.5">
+                  <h3 className="text-sm sm:text-base font-bold text-[#1d1d1f] dark:text-white mb-1.5">
                     Not Recommended
                   </h3>
                   <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] leading-relaxed">
@@ -1931,33 +2003,33 @@ export default function StandaloneApp() {
 
           {/* Section 3: Frequently Asked Questions (FAQ) */}
           <div>
-            <div className="text-center max-w-2xl mx-auto mb-10">
-              <span className="px-3 py-1 rounded-full text-[11px] font-semibold tracking-wide uppercase bg-purple-50 text-purple-700 dark:bg-purple-950/40 dark:text-purple-300 border border-purple-200/60 dark:border-purple-800/40 inline-block mb-3">
+            <div className="text-center max-w-2xl 2xl:max-w-3xl mx-auto mb-8 sm:mb-10">
+              <span className="px-3 py-1 rounded-full text-[11px] font-semibold tracking-wide uppercase bg-purple-50 text-purple-700 dark:bg-purple-950/40 dark:text-purple-300 border border-purple-200/60 dark:border-purple-800/40 inline-block mb-2.5 sm:mb-3">
                 Knowledge Base
               </span>
               <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#1d1d1f] dark:text-white">
                 Frequently Asked Questions
               </h2>
-              <p className="mt-3 text-sm text-[#86868b] dark:text-[#a1a1a6] leading-relaxed">
+              <p className="mt-2.5 sm:mt-3 text-xs sm:text-sm text-[#86868b] dark:text-[#a1a1a6] leading-relaxed px-2">
                 Everything you need to know about evaluating discretionary purchases, cash flow simulations, and privacy.
               </p>
             </div>
 
-            <div className="space-y-3.5 max-w-3xl mx-auto">
+            <div className="space-y-3 sm:space-y-3.5 max-w-3xl 2xl:max-w-4xl mx-auto">
               {FAQ_ITEMS.map((faq, idx) => {
                 const isOpen = !!openFaqs[idx];
                 return (
                   <div
                     key={idx}
-                    className="rounded-2xl bg-white dark:bg-[#1c1c1e] border border-black/[0.06] dark:border-white/10 p-5 shadow-sm hover:border-[#0071e3]/30 dark:hover:border-white/20 transition-all duration-200"
+                    className="rounded-xl sm:rounded-2xl bg-white dark:bg-[#1c1c1e] border border-black/[0.06] dark:border-white/10 p-4 sm:p-5 shadow-sm hover:border-[#0071e3]/30 dark:hover:border-white/20 transition-all duration-200"
                   >
                     <button
                       type="button"
                       onClick={() => toggleFaq(idx)}
-                      className="w-full text-left text-sm sm:text-base font-semibold text-[#1d1d1f] dark:text-white cursor-pointer flex items-center justify-between group select-none"
+                      className="w-full text-left text-xs sm:text-sm md:text-base font-semibold text-[#1d1d1f] dark:text-white cursor-pointer flex items-center justify-between group select-none"
                       aria-expanded={isOpen}
                     >
-                      <span className="group-hover:text-[#0071e3] dark:group-hover:text-blue-400 transition-colors pr-4">
+                      <span className="group-hover:text-[#0071e3] dark:group-hover:text-blue-400 transition-colors pr-3 sm:pr-4">
                         {faq.question}
                       </span>
                       <span
@@ -1970,7 +2042,7 @@ export default function StandaloneApp() {
                     </button>
                     <div
                       className={`grid transition-all duration-300 ease-in-out ${
-                        isOpen ? "grid-rows-[1fr] opacity-100 mt-3" : "grid-rows-[0fr] opacity-0 mt-0"
+                        isOpen ? "grid-rows-[1fr] opacity-100 mt-2.5 sm:mt-3" : "grid-rows-[0fr] opacity-0 mt-0"
                       }`}
                     >
                       <div className="overflow-hidden">
@@ -1988,8 +2060,8 @@ export default function StandaloneApp() {
       </main>
 
       {/* Enhanced Apple & Google Aesthetic Footer */}
-      <footer className="border-t border-gray-200/60 dark:border-white/10 py-8 mt-12 bg-white/40 dark:bg-[#0c0c0e]/40 backdrop-blur-sm">
-        <div className="max-w-5xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-400 dark:text-gray-500">
+      <footer className="border-t border-gray-200/60 dark:border-white/10 py-6 sm:py-8 mt-12 mb-16 sm:mb-0 bg-white/40 dark:bg-[#0c0c0e]/40 backdrop-blur-sm">
+        <div className="max-w-6xl 2xl:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-gray-400 dark:text-gray-500 text-center md:text-left">
           <div className="flex items-center gap-2">
             <span className="w-5 h-5 rounded-lg bg-gradient-to-tr from-[#0071e3] to-[#34a853] flex items-center justify-center text-white font-bold text-[10px]">
               ✓
@@ -1999,13 +2071,13 @@ export default function StandaloneApp() {
             </span>
             <span className="hidden sm:inline">— AI Financial Commitment & 90-Day Liquidity Simulator</span>
           </div>
-          <div className="flex items-center gap-4 text-[11px]">
+          <div className="flex flex-wrap justify-center md:justify-end items-center gap-3 sm:gap-4 text-[11px]">
             <button
               onClick={() => {
                 setActiveTab("advisor");
                 window.scrollTo({ top: 0, behavior: "smooth" });
               }}
-              className="hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+              className="hover:text-gray-700 dark:hover:text-gray-300 transition-colors cursor-pointer"
             >
               Evaluate
             </button>
@@ -2014,7 +2086,7 @@ export default function StandaloneApp() {
                 setActiveTab("history");
                 window.scrollTo({ top: 0, behavior: "smooth" });
               }}
-              className="hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+              className="hover:text-gray-700 dark:hover:text-gray-300 transition-colors cursor-pointer"
             >
               History
             </button>
@@ -2023,7 +2095,7 @@ export default function StandaloneApp() {
                 setActiveTab("profile");
                 window.scrollTo({ top: 0, behavior: "smooth" });
               }}
-              className="hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+              className="hover:text-gray-700 dark:hover:text-gray-300 transition-colors cursor-pointer"
             >
               Profile
             </button>
@@ -2033,27 +2105,90 @@ export default function StandaloneApp() {
         </div>
       </footer>
 
+      {/* Mobile Bottom Navigation Bar (Apple iOS / Android Native Style) */}
+      <nav
+        className="sm:hidden fixed bottom-0 left-0 right-0 z-40 glass-nav border-t border-black/[0.06] dark:border-white/10 px-2 py-1.5 pb-[max(0.6rem,env(safe-area-inset-bottom))] shadow-lg transition-colors"
+        aria-label="Mobile Navigation"
+      >
+        <div className="grid grid-cols-3 max-w-sm mx-auto gap-1">
+          <button
+            type="button"
+            onClick={() => {
+              setActiveTab("advisor");
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+            className={`flex flex-col items-center justify-center py-1.5 px-2 rounded-xl transition-all cursor-pointer ${
+              activeTab === "advisor"
+                ? "text-[#0071e3] dark:text-blue-400 font-semibold bg-blue-50/70 dark:bg-blue-950/40"
+                : "text-gray-500 dark:text-gray-400 font-medium hover:text-gray-800 dark:hover:text-gray-200"
+            }`}
+          >
+            <span className="text-base leading-none mb-1">⚡</span>
+            <span className="text-[10px] tracking-tight">Evaluate</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              setActiveTab("history");
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+            className={`relative flex flex-col items-center justify-center py-1.5 px-2 rounded-xl transition-all cursor-pointer ${
+              activeTab === "history"
+                ? "text-[#0071e3] dark:text-blue-400 font-semibold bg-blue-50/70 dark:bg-blue-950/40"
+                : "text-gray-500 dark:text-gray-400 font-medium hover:text-gray-800 dark:hover:text-gray-200"
+            }`}
+          >
+            <div className="relative inline-block leading-none mb-1">
+              <span className="text-base">📜</span>
+              {history.length > 0 && (
+                <span className="absolute -top-1 -right-2 px-1 py-0.2 rounded-full text-[9px] font-bold bg-[#0071e3] text-white leading-tight min-w-[14px] text-center">
+                  {history.length}
+                </span>
+              )}
+            </div>
+            <span className="text-[10px] tracking-tight">History</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              setActiveTab("profile");
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+            className={`flex flex-col items-center justify-center py-1.5 px-2 rounded-xl transition-all cursor-pointer ${
+              activeTab === "profile"
+                ? "text-[#0071e3] dark:text-blue-400 font-semibold bg-blue-50/70 dark:bg-blue-950/40"
+                : "text-gray-500 dark:text-gray-400 font-medium hover:text-gray-800 dark:hover:text-gray-200"
+            }`}
+          >
+            <span className="text-base leading-none mb-1">👤</span>
+            <span className="text-[10px] tracking-tight">Profile</span>
+          </button>
+        </div>
+      </nav>
+
       {/* Apple & Google Aesthetic Authentication Modal */}
       {authModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 dark:bg-black/70 backdrop-blur-md animate-fadeIn">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/50 dark:bg-black/70 backdrop-blur-md animate-fadeIn overflow-y-auto">
           <div
-            className="relative w-full max-w-md bg-white dark:bg-[#1c1c1e] rounded-3xl p-7 shadow-2xl border border-black/[0.06] dark:border-white/10 transition-all transform animate-scaleUp"
+            className="relative w-full max-w-md max-h-[92vh] overflow-y-auto bg-white dark:bg-[#1c1c1e] rounded-2xl sm:rounded-3xl p-5 sm:p-7 shadow-2xl border border-black/[0.06] dark:border-white/10 transition-all transform animate-scaleUp my-auto"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Close Button */}
             <button
               onClick={() => setAuthModalOpen(false)}
-              className="absolute top-5 right-5 w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 dark:bg-white/10 dark:hover:bg-white/20 text-gray-500 dark:text-gray-300 flex items-center justify-center text-sm font-semibold transition-colors cursor-pointer"
+              className="absolute top-4 right-4 sm:top-5 sm:right-5 w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 dark:bg-white/10 dark:hover:bg-white/20 text-gray-500 dark:text-gray-300 flex items-center justify-center text-sm font-semibold transition-colors cursor-pointer"
             >
               ✕
             </button>
 
             {/* Modal Header */}
-            <div className="text-center mb-6">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#0071e3] to-[#34a853] flex items-center justify-center text-white font-bold text-xl mx-auto mb-3 shadow-md">
+            <div className="text-center mb-5 sm:mb-6">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-tr from-[#0071e3] to-[#34a853] flex items-center justify-center text-white font-bold text-lg sm:text-xl mx-auto mb-2.5 sm:mb-3 shadow-md">
                 ✓
               </div>
-              <h3 className="text-xl font-bold text-[#1d1d1f] dark:text-white tracking-tight">
+              <h3 className="text-lg sm:text-xl font-bold text-[#1d1d1f] dark:text-white tracking-tight">
                 {authMode === "signin" ? "Sign In to Your Account" : "Create Your Account"}
               </h3>
               <p className="text-xs text-[#86868b] dark:text-gray-400 mt-1">
@@ -2064,7 +2199,7 @@ export default function StandaloneApp() {
             </div>
 
             {/* Mode Switcher Pills */}
-            <div className="flex p-1 bg-gray-100 dark:bg-white/[0.06] rounded-2xl mb-5 text-xs font-semibold">
+            <div className="flex p-1 bg-gray-100 dark:bg-white/[0.06] rounded-xl sm:rounded-2xl mb-4 sm:mb-5 text-xs font-semibold">
               <button
                 type="button"
                 onClick={() => {
@@ -2072,7 +2207,7 @@ export default function StandaloneApp() {
                   setAuthError(null);
                   setAuthMessage(null);
                 }}
-                className={`flex-1 py-2 rounded-xl transition-all ${
+                className={`flex-1 py-1.5 sm:py-2 rounded-lg sm:rounded-xl transition-all cursor-pointer ${
                   authMode === "signin"
                     ? "bg-white text-gray-900 dark:bg-[#2c2c2e] dark:text-white shadow-sm"
                     : "text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
@@ -2087,7 +2222,7 @@ export default function StandaloneApp() {
                   setAuthError(null);
                   setAuthMessage(null);
                 }}
-                className={`flex-1 py-2 rounded-xl transition-all ${
+                className={`flex-1 py-1.5 sm:py-2 rounded-lg sm:rounded-xl transition-all cursor-pointer ${
                   authMode === "signup"
                     ? "bg-white text-gray-900 dark:bg-[#2c2c2e] dark:text-white shadow-sm"
                     : "text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
@@ -2099,7 +2234,7 @@ export default function StandaloneApp() {
 
             {/* Supabase unconfigured warning banner */}
             {!supabaseReady && (
-              <div className="mb-4 p-3 rounded-2xl bg-amber-50 border border-amber-200 dark:bg-amber-950/40 dark:border-amber-800/50 text-amber-800 dark:text-amber-300 text-xs leading-relaxed">
+              <div className="mb-4 p-3 rounded-xl sm:rounded-2xl bg-amber-50 border border-amber-200 dark:bg-amber-950/40 dark:border-amber-800/50 text-amber-800 dark:text-amber-300 text-xs leading-relaxed">
                 <strong className="block font-semibold mb-0.5">Demo Mode Active</strong>
                 Add your Supabase credentials to <code className="bg-amber-100/80 dark:bg-amber-900/50 px-1 py-0.5 rounded font-mono text-[11px]">.env.local</code> to enable live cloud user accounts.
               </div>
@@ -2107,21 +2242,21 @@ export default function StandaloneApp() {
 
             {/* Status & Error Alerts */}
             {authError && (
-              <div className="mb-4 p-3 rounded-2xl bg-rose-50 border border-rose-200 dark:bg-rose-950/40 dark:border-rose-800/50 text-rose-700 dark:text-rose-300 text-xs font-medium">
+              <div className="mb-4 p-3 rounded-xl sm:rounded-2xl bg-rose-50 border border-rose-200 dark:bg-rose-950/40 dark:border-rose-800/50 text-rose-700 dark:text-rose-300 text-xs font-medium">
                 {authError}
               </div>
             )}
             {authMessage && (
-              <div className="mb-4 p-3 rounded-2xl bg-emerald-50 border border-emerald-200 dark:bg-emerald-950/40 dark:border-emerald-800/50 text-emerald-800 dark:text-emerald-300 text-xs font-medium">
+              <div className="mb-4 p-3 rounded-xl sm:rounded-2xl bg-emerald-50 border border-emerald-200 dark:bg-emerald-950/40 dark:border-emerald-800/50 text-emerald-800 dark:text-emerald-300 text-xs font-medium">
                 {authMessage}
               </div>
             )}
 
             {/* Auth Form */}
-            <form onSubmit={handleAuthSubmit} className="space-y-4">
+            <form onSubmit={handleAuthSubmit} className="space-y-3.5 sm:space-y-4">
               {authMode === "signup" && (
                 <div>
-                  <label className="text-xs font-semibold text-gray-700 dark:text-gray-300 block mb-1.5">
+                  <label className="text-xs font-semibold text-gray-700 dark:text-gray-300 block mb-1 sm:mb-1.5">
                     Full Name
                   </label>
                   <input
@@ -2130,13 +2265,13 @@ export default function StandaloneApp() {
                     placeholder="Alex Morgan"
                     value={authFullName}
                     onChange={(e) => setAuthFullName(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 text-sm focus:outline-none focus:ring-2 focus:ring-[#0071e3]/20 focus:border-[#0071e3] transition-all bg-gray-50/50 focus:bg-white dark:bg-[#151518] dark:focus:bg-[#151518] text-[#1d1d1f] dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-600"
+                    className="w-full px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-xl border border-gray-200 dark:border-white/10 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#0071e3]/20 focus:border-[#0071e3] transition-all bg-gray-50/50 focus:bg-white dark:bg-[#151518] dark:focus:bg-[#151518] text-[#1d1d1f] dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-600"
                   />
                 </div>
               )}
 
               <div>
-                <label className="text-xs font-semibold text-gray-700 dark:text-gray-300 block mb-1.5">
+                <label className="text-xs font-semibold text-gray-700 dark:text-gray-300 block mb-1 sm:mb-1.5">
                   Email Address
                 </label>
                 <input
@@ -2145,12 +2280,12 @@ export default function StandaloneApp() {
                   placeholder="name@example.com"
                   value={authEmail}
                   onChange={(e) => setAuthEmail(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 text-sm focus:outline-none focus:ring-2 focus:ring-[#0071e3]/20 focus:border-[#0071e3] transition-all bg-gray-50/50 focus:bg-white dark:bg-[#151518] dark:focus:bg-[#151518] text-[#1d1d1f] dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-600"
+                  className="w-full px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-xl border border-gray-200 dark:border-white/10 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#0071e3]/20 focus:border-[#0071e3] transition-all bg-gray-50/50 focus:bg-white dark:bg-[#151518] dark:focus:bg-[#151518] text-[#1d1d1f] dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-600"
                 />
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-gray-700 dark:text-gray-300 block mb-1.5">
+                <label className="text-xs font-semibold text-gray-700 dark:text-gray-300 block mb-1 sm:mb-1.5">
                   Password
                 </label>
                 <input
@@ -2159,14 +2294,14 @@ export default function StandaloneApp() {
                   placeholder="••••••••"
                   value={authPassword}
                   onChange={(e) => setAuthPassword(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 text-sm focus:outline-none focus:ring-2 focus:ring-[#0071e3]/20 focus:border-[#0071e3] transition-all bg-gray-50/50 focus:bg-white dark:bg-[#151518] dark:focus:bg-[#151518] text-[#1d1d1f] dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-600"
+                  className="w-full px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-xl border border-gray-200 dark:border-white/10 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#0071e3]/20 focus:border-[#0071e3] transition-all bg-gray-50/50 focus:bg-white dark:bg-[#151518] dark:focus:bg-[#151518] text-[#1d1d1f] dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-600"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={authLoading}
-                className="w-full mt-2 py-3 rounded-2xl bg-gradient-to-r from-[#0071e3] to-[#005bb5] hover:from-[#0077ed] hover:to-[#0066cc] text-white font-semibold text-xs shadow-md transition-all disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer active:scale-98"
+                className="w-full mt-2 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-gradient-to-r from-[#0071e3] to-[#005bb5] hover:from-[#0077ed] hover:to-[#0066cc] text-white font-semibold text-xs shadow-md transition-all disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer active:scale-98"
               >
                 {authLoading ? (
                   <span>Authenticating...</span>
@@ -2178,7 +2313,7 @@ export default function StandaloneApp() {
               </button>
             </form>
 
-            <div className="mt-5 text-center text-xs text-gray-400 dark:text-gray-500">
+            <div className="mt-4 sm:mt-5 text-center text-xs text-gray-400 dark:text-gray-500">
               Secured with Supabase Row Level Security (RLS)
             </div>
           </div>

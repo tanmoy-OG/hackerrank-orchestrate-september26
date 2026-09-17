@@ -93,7 +93,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="h-full" suppressHydrationWarning>
+    <html lang="en" className="h-full overflow-x-hidden" suppressHydrationWarning>
       <head>
         <StructuredData />
         <script
@@ -114,7 +114,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="min-h-full flex flex-col bg-[#fbfbfd] text-[#1d1d1f] dark:bg-[#000000] dark:text-[#f5f5f7] select-none transition-colors duration-200">
+      <body className="min-h-full flex flex-col bg-[#fbfbfd] text-[#1d1d1f] dark:bg-[#000000] dark:text-[#f5f5f7] select-none transition-colors duration-200 overflow-x-hidden">
         {children}
         <Analytics />
       </body>
