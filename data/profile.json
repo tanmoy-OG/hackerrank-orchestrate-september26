@@ -1,0 +1,38 @@
+{
+  "name": "Alex Morgan",
+  "homeCurrency": "USD",
+  "currentBalance": 6250,
+  "minimumBalance": 1800,
+  "monthlySalary": 4200,
+  "payday": 15,
+  "monthlyFixedExpenses": 1450,
+  "financialPriorities": [
+    "emergency_savings",
+    "retirement",
+    "travel"
+  ],
+  "expenseCategoriesToProtect": [
+    "rent",
+    "groceries",
+    "utilities",
+    "healthcare",
+    "debt_repayment"
+  ],
+  "expenseCategoriesWillingToReduce": [
+    "dining",
+    "shopping",
+    "entertainment"
+  ],
+  "expenseCategoriesWillingToStop": [
+    "streaming",
+    "cloud_storage",
+    "delivery_membership"
+  ],
+  "paymentMethodsUserWillConsider": [
+    "full_payment",
+    "installments",
+    "partial_payment"
+  ],
+  "maxInstallmentMonths": 6,
+  "updatedAt": "2026-09-13T18:01:53.149Z"
+}

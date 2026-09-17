@@ -1,0 +1,50 @@
+[
+  {
+    "id": "req_hist_01",
+    "createdAt": "2026-09-12T14:32:00.000Z",
+    "query": "Can I afford to purchase a 4K OLED Monitor for $899 today?",
+    "amount": 899.0,
+    "currency": "USD",
+    "requestDate": "2026-09-12",
+    "desiredDate": "2026-10-15",
+    "allowsPartial": false,
+    "decision": {
+      "affordability_status": "affordable_now",
+      "recommended_payment_method": "full_payment",
+      "amount_safe_to_pay": "899",
+      "earliest_date_for_full_payment": "2026-09-12",
+      "payment_plan": "2026-09-12:899",
+      "spending_changes_needed": "none",
+      "decision_explanation": "Pay USD 899.00 today. This leaves at least USD 1,800.00 available over the next 90 days."
+    },
+    "profileSnapshot": {
+      "currentBalance": 6250.0,
+      "minimumBalance": 1800.0,
+      "homeCurrency": "USD"
+    }
+  },
+  {
+    "id": "req_hist_02",
+    "createdAt": "2026-09-10T10:15:00.000Z",
+    "query": "Can I replace the home HVAC condenser unit for $3,800?",
+    "amount": 3800.0,
+    "currency": "USD",
+    "requestDate": "2026-09-10",
+    "desiredDate": "2026-12-15",
+    "allowsPartial": true,
+    "decision": {
+      "affordability_status": "affordable_with_plan",
+      "recommended_payment_method": "installments",
+      "amount_safe_to_pay": "1850",
+      "earliest_date_for_full_payment": "2026-10-15",
+      "payment_plan": "2026-09-10:1266.67|2026-10-10:1266.67|2026-11-10:1266.67",
+      "spending_changes_needed": "none",
+      "decision_explanation": "Use 3 installments of USD 1,266.67, starting 10 September 2026. This leaves at least USD 1,800.00 available."
+    },
+    "profileSnapshot": {
+      "currentBalance": 6250.0,
+      "minimumBalance": 1800.0,
+      "homeCurrency": "USD"
+    }
+  }
+]
