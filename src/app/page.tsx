@@ -3,6 +3,14 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import {
+  detectLocalityCurrency,
+  getCurrencySymbol,
+  SUPPORTED_CURRENCIES,
+  getPresetQueries,
+  getLocalizedDefaultScenario,
+  type PresetQuery,
+} from "@/lib/localeCurrency";
 
 interface TrajectoryPoint {
   date: string;
@@ -179,6 +187,54 @@ export default function StandaloneApp() {
   const [uploadedFileName, setUploadedFileName] = useState<string>("");
   const [receiptAmount, setReceiptAmount] = useState<number | null>(null);
 
+  // Dynamic sample queries adapted to the current currency
+  const presetQueries = useMemo(() => getPresetQueries(currency), [currency]);
+
+  // Locality Currency Auto-Detection & Preference Persistence
+  useEffect(() => {
+    try {
+      const savedCurrency = localStorage.getItem("user_configured_currency");
+      const localProfileStr = localStorage.getItem("custom_user_profile");
+      let configuredCurrency: string | null = savedCurrency;
+
+      if (!configuredCurrency && localProfileStr) {
+        try {
+          const parsed = JSON.parse(localProfileStr);
+          if (parsed?.homeCurrency) configuredCurrency = parsed.homeCurrency;
+        } catch {}
+      }
+
+      if (configuredCurrency) {
+        // User has already explicitly configured a currency — respect their preference!
+        setCurrency(configuredCurrency);
+        setProfile((prev) => {
+          let updated = { ...prev, homeCurrency: configuredCurrency! };
+          if (localProfileStr) {
+            try {
+              const parsed = JSON.parse(localProfileStr);
+              if (parsed && typeof parsed === "object") {
+                updated = { ...updated, ...parsed, homeCurrency: configuredCurrency! };
+              }
+            } catch {}
+          }
+          return updated;
+        });
+      } else {
+        // Unconfigured / first-time visitor: auto-detect currency from physical locality
+        const detected = detectLocalityCurrency();
+        setCurrency(detected);
+        setProfile((prev) => ({ ...prev, homeCurrency: detected }));
+
+        // Apply realistic localized scenario (e.g. ₹85,000 in India, $1,200 in US, €1,100 in Europe)
+        const scenario = getLocalizedDefaultScenario(detected);
+        setQuery(scenario.query);
+        setAmount(scenario.amount);
+      }
+    } catch (e) {
+      console.warn("Could not check local currency preference:", e);
+    }
+  }, []);
+
   // Execution & Results State
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<AnalysisResult | null>(null);
@@ -193,6 +249,11 @@ export default function StandaloneApp() {
       if (data.success && data.profile) {
         setProfile(data.profile);
         setCurrency(data.profile.homeCurrency || "USD");
+        try {
+          if (data.profile.homeCurrency) {
+            localStorage.setItem("user_configured_currency", data.profile.homeCurrency);
+          }
+        } catch {}
       } else if (res.status === 404) {
         // No profile found — keep current state (defaults for guest, or Supabase defaults after login)
       }
@@ -266,8 +327,12 @@ export default function StandaloneApp() {
       setAuthUser(user);
 
       if (event === "SIGNED_OUT") {
-        // Immediately reset to guest defaults so Supabase data doesn't leak
-        setProfile(DEFAULT_PROFILE);
+        // Reset to guest profile while preserving configured or detected local currency
+        const localCurr =
+          (typeof window !== "undefined" && localStorage.getItem("user_configured_currency")) ||
+          detectLocalityCurrency();
+        setProfile({ ...DEFAULT_PROFILE, homeCurrency: localCurr });
+        setCurrency(localCurr);
         setHistory([]);
         setStorageMode("local");
         setProfileLoading(false);
@@ -343,6 +408,11 @@ export default function StandaloneApp() {
     e.preventDefault();
     setProfileSaving(true);
     try {
+      try {
+        localStorage.setItem("user_configured_currency", profile.homeCurrency);
+        localStorage.setItem("custom_user_profile", JSON.stringify(profile));
+      } catch {}
+
       const res = await fetch("/api/profile", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -351,6 +421,7 @@ export default function StandaloneApp() {
       const data = await res.json();
       if (data.success) {
         setProfile(data.profile);
+        setCurrency(data.profile.homeCurrency || profile.homeCurrency);
         setProfileSaveSuccess(true);
         setTimeout(() => setProfileSaveSuccess(false), 3500);
       }
@@ -389,10 +460,11 @@ export default function StandaloneApp() {
     }
   };
 
-  const handlePresetSelect = (p: typeof PRESET_QUERIES[0]) => {
+  const handlePresetSelect = (p: PresetQuery) => {
     setQuery(p.text);
     setAmount(p.amount);
     setCurrency(p.currency);
+    setProfile((prev) => ({ ...prev, homeCurrency: p.currency }));
     setAllowsPartial(Boolean(p.allowsPartial));
   };
 
@@ -731,7 +803,7 @@ export default function StandaloneApp() {
                     Active Account: {profile.name || "Guest (Unsaved Profile)"}
                   </span>
                   <span className="text-gray-500 dark:text-gray-400">
-                    Available: <strong className="text-gray-800 dark:text-gray-200">{profile.homeCurrency} {(profile.currentBalance || 0).toLocaleString()}</strong> | Reserve Buffer: <strong className="text-gray-800 dark:text-gray-200">{profile.homeCurrency} {(profile.minimumBalance || 0).toLocaleString()}</strong>
+                    Available: <strong className="text-gray-800 dark:text-gray-200">{getCurrencySymbol(profile.homeCurrency)}{(profile.currentBalance || 0).toLocaleString()} {profile.homeCurrency}</strong> | Reserve Buffer: <strong className="text-gray-800 dark:text-gray-200">{getCurrencySymbol(profile.homeCurrency)}{(profile.minimumBalance || 0).toLocaleString()} {profile.homeCurrency}</strong>
                   </span>
                 </div>
               </div>
@@ -756,7 +828,7 @@ export default function StandaloneApp() {
                     rows={2}
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
-                    placeholder="e.g. Can I afford to buy a new laptop for $1,200 today?"
+                    placeholder={`e.g. Can I afford to buy a new laptop for ${getCurrencySymbol(currency)}${currency === "INR" ? "85,000" : "1,200"} today?`}
                     className="w-full p-4 rounded-2xl bg-[#f5f5f7] dark:bg-[#151518] border border-gray-200 dark:border-white/10 text-[#1d1d1f] dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#0071e3]/30 focus:border-[#0071e3] transition-all resize-none font-normal placeholder:text-gray-400 dark:placeholder:text-gray-600"
                     required
                   />
@@ -764,7 +836,7 @@ export default function StandaloneApp() {
                   {/* Preset Suggestions */}
                   <div className="mt-2.5 flex flex-wrap gap-1.5 items-center">
                     <span className="text-[11px] text-gray-400 dark:text-gray-500 font-medium mr-1">Sample Scenarios:</span>
-                    {PRESET_QUERIES.map((p, idx) => (
+                    {presetQueries.map((p, idx) => (
                       <button
                         key={idx}
                         type="button"
@@ -800,15 +872,21 @@ export default function StandaloneApp() {
                     </label>
                     <select
                       value={currency}
-                      onChange={(e) => setCurrency(e.target.value)}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setCurrency(val);
+                        setProfile((prev) => ({ ...prev, homeCurrency: val }));
+                        try {
+                          localStorage.setItem("user_configured_currency", val);
+                        } catch {}
+                      }}
                       className="w-full p-3 rounded-xl bg-[#f5f5f7] dark:bg-[#151518] border border-gray-200 dark:border-white/10 text-[#1d1d1f] dark:text-white text-xs font-medium focus:ring-2 focus:ring-[#0071e3]/30"
                     >
-                      <option value="USD">USD ($)</option>
-                      <option value="EUR">EUR (€)</option>
-                      <option value="GBP">GBP (£)</option>
-                      <option value="INR">INR (₹)</option>
-                      <option value="CAD">CAD (C$)</option>
-                      <option value="AUD">AUD (A$)</option>
+                      {SUPPORTED_CURRENCIES.map((c) => (
+                        <option key={c.code} value={c.code}>
+                          {c.label}
+                        </option>
+                      ))}
                     </select>
                   </div>
 
@@ -981,7 +1059,7 @@ export default function StandaloneApp() {
                       Safe to Pay Today
                     </span>
                     <span className="text-xl font-bold text-gray-900 dark:text-white mt-1 block">
-                      {result.profile.home_currency} {Number(result.decision.amount_safe_to_pay).toLocaleString()}
+                      {getCurrencySymbol(result.profile.home_currency)}{Number(result.decision.amount_safe_to_pay).toLocaleString()} <span className="text-xs text-gray-400 dark:text-gray-500 font-medium">{result.profile.home_currency}</span>
                     </span>
                   </div>
 
@@ -999,7 +1077,7 @@ export default function StandaloneApp() {
                       Current Account
                     </span>
                     <span className="text-sm font-bold text-gray-900 dark:text-white mt-1 block">
-                      {result.profile.home_currency} {result.profile.current_balance.toLocaleString()}
+                      {getCurrencySymbol(result.profile.home_currency)}{result.profile.current_balance.toLocaleString()} <span className="text-xs text-gray-400 dark:text-gray-500 font-medium">{result.profile.home_currency}</span>
                     </span>
                   </div>
 
@@ -1008,7 +1086,7 @@ export default function StandaloneApp() {
                       Reserve Shield
                     </span>
                     <span className="text-sm font-bold text-gray-900 dark:text-white mt-1 block">
-                      {result.profile.home_currency} {result.profile.minimum_balance.toLocaleString()}
+                      {getCurrencySymbol(result.profile.home_currency)}{result.profile.minimum_balance.toLocaleString()} <span className="text-xs text-gray-400 dark:text-gray-500 font-medium">{result.profile.home_currency}</span>
                     </span>
                   </div>
                 </div>
@@ -1066,7 +1144,7 @@ export default function StandaloneApp() {
                         <span>Day 0 ({requestDate})</span>
                         <span className="text-red-500 dark:text-red-400 font-semibold flex items-center">
                           <span className="w-3 h-0.5 bg-red-500 inline-block mr-1"></span>
-                          Min Reserve: {result.profile.home_currency} {result.profile.minimum_balance.toLocaleString()}
+                          Min Reserve: {getCurrencySymbol(result.profile.home_currency)}{result.profile.minimum_balance.toLocaleString()} ({result.profile.home_currency})
                         </span>
                         <span className="text-blue-600 dark:text-blue-400 font-semibold flex items-center">
                           <span className="w-3 h-0.5 bg-blue-600 inline-block mr-1"></span>
@@ -1092,7 +1170,7 @@ export default function StandaloneApp() {
                             <span className="text-gray-400 dark:text-gray-500 block font-medium">Payment {idx + 1}</span>
                             <span className="font-semibold text-gray-800 dark:text-gray-200 block text-sm mt-0.5">{pDate}</span>
                             <span className="font-bold text-[#0071e3] dark:text-blue-400 mt-1 block">
-                              {result.profile.home_currency} {Number(pAmt).toLocaleString()}
+                              {getCurrencySymbol(result.profile.home_currency)}{Number(pAmt).toLocaleString()} <span className="text-[10px] text-gray-400 dark:text-gray-500 font-normal">{result.profile.home_currency}</span>
                             </span>
                           </div>
                         );
@@ -1280,7 +1358,7 @@ export default function StandaloneApp() {
                             {statusInfo.label}
                           </span>
                           <span className="text-xs font-bold text-gray-800 dark:text-gray-200">
-                            {item.currency} {Number(item.amount).toLocaleString()}
+                            {getCurrencySymbol(item.currency)}{Number(item.amount).toLocaleString()} <span className="text-[10px] text-gray-400 dark:text-gray-500 font-normal">{item.currency}</span>
                           </span>
                           {item.uploadedReceiptName && (
                             <span className="text-[10px] bg-gray-100 dark:bg-[#2c2c2e] text-gray-600 dark:text-gray-300 px-2 py-0.5 rounded-full">
@@ -1321,7 +1399,7 @@ export default function StandaloneApp() {
                             <div className="p-3 rounded-xl bg-gray-50 dark:bg-[#151518] border border-transparent dark:border-white/10">
                               <span className="text-gray-400 dark:text-gray-500 block text-[10px] uppercase font-bold">Safe Today</span>
                               <span className="font-bold text-gray-800 dark:text-gray-200 text-sm">
-                                {item.currency} {Number(item.decision.amount_safe_to_pay).toLocaleString()}
+                                {getCurrencySymbol(item.currency)}{Number(item.decision.amount_safe_to_pay).toLocaleString()} <span className="text-[10px] text-gray-400 dark:text-gray-500 font-normal">{item.currency}</span>
                               </span>
                             </div>
                             <div className="p-3 rounded-xl bg-gray-50 dark:bg-[#151518] border border-transparent dark:border-white/10">
@@ -1339,7 +1417,7 @@ export default function StandaloneApp() {
                             <div className="p-3 rounded-xl bg-gray-50 dark:bg-[#151518] border border-transparent dark:border-white/10">
                               <span className="text-gray-400 dark:text-gray-500 block text-[10px] uppercase font-bold">Account Buffer</span>
                               <span className="font-bold text-gray-800 dark:text-gray-200 text-sm">
-                                {item.currency} {item.profileSnapshot.minimumBalance.toLocaleString()}
+                                {getCurrencySymbol(item.currency)}{item.profileSnapshot.minimumBalance.toLocaleString()} <span className="text-[10px] text-gray-400 dark:text-gray-500 font-normal">{item.currency}</span>
                               </span>
                             </div>
                           </div>
@@ -1358,7 +1436,7 @@ export default function StandaloneApp() {
                                       key={idx}
                                       className="px-3 py-1 rounded-xl bg-blue-50 text-blue-800 border border-blue-100 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-800/50 text-xs font-medium"
                                     >
-                                      Payment {idx + 1}: {pDate} → {item.currency} {Number(pAmt).toLocaleString()}
+                                      Payment {idx + 1}: {pDate} → {getCurrencySymbol(item.currency)}{Number(pAmt).toLocaleString()} <span className="text-[10px] opacity-75 font-normal">{item.currency}</span>
                                     </span>
                                   );
                                 })}
@@ -1441,18 +1519,21 @@ export default function StandaloneApp() {
                     </label>
                     <select
                       value={profile.homeCurrency}
-                      onChange={(e) => setProfile({ ...profile, homeCurrency: e.target.value })}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setProfile({ ...profile, homeCurrency: val });
+                        setCurrency(val);
+                        try {
+                          localStorage.setItem("user_configured_currency", val);
+                        } catch {}
+                      }}
                       className="w-full p-3 rounded-xl bg-[#f5f5f7] dark:bg-[#151518] border border-gray-200 dark:border-white/10 text-[#1d1d1f] dark:text-white text-xs font-medium focus:ring-2 focus:ring-[#0071e3]/30"
                     >
-                      <option value="USD">USD ($)</option>
-                      <option value="EUR">EUR (€)</option>
-                      <option value="GBP">GBP (£)</option>
-                      <option value="INR">INR (₹)</option>
-                      <option value="CAD">CAD ($)</option>
-                      <option value="AUD">AUD ($)</option>
-                      <option value="JPY">JPY (¥)</option>
-                      <option value="IDR">IDR (Rp)</option>
-                      <option value="ZAR">ZAR (R)</option>
+                      {SUPPORTED_CURRENCIES.map((c) => (
+                        <option key={c.code} value={c.code}>
+                          {c.label}
+                        </option>
+                      ))}
                     </select>
                   </div>
 
