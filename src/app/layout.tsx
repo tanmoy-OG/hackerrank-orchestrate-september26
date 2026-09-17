@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { Analytics } from "@vercel/analytics/react";
 import StructuredData from "@/components/StructuredData";
 import "./globals.css";
 
@@ -115,6 +116,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-full flex flex-col bg-[#fbfbfd] text-[#1d1d1f] dark:bg-[#000000] dark:text-[#f5f5f7] select-none transition-colors duration-200">
         {children}
+        <Analytics />
       </body>
     </html>
   );
